@@ -164,30 +164,49 @@ public struct SyrupView: View {
                 .accessibilityLabel(Text("Close"))
             }
 
-            ScrollView {
-                VStack(spacing: 16) {
-                    Image(systemName: "drop.fill")
-                        .font(.system(size: 44))
-                        // Dark brown vanishes on a dark sheet: the brand gold there.
-                        .foregroundStyle(colorScheme == .dark ? Color.wafflePrimary : Color.waffleTertiary)
+            // On a tall screen the pitch would sit at the top with a dead band above the pinned
+            // buy area. The scroll content is at least as tall as the viewport and spreads its
+            // slack evenly between the sections; where it is taller (small phones, large
+            // text) the spacers collapse to their minimum and it scrolls as before.
+            GeometryReader { viewport in
+                ScrollView {
+                    VStack(spacing: 0) {
+                        Spacer(minLength: 0)
 
-                    Text(verbatim: "Syrup")
-                        .font(.largeTitle).bold()
+                        Image(systemName: "drop.fill")
+                            .font(.system(size: 44))
+                            // Dark brown vanishes on a dark sheet: the brand gold there.
+                            .foregroundStyle(colorScheme == .dark ? Color.wafflePrimary : Color.waffleTertiary)
 
-                    Text(Self.lead(for: pitch.trigger))
-                        .font(.headline)
-                        .multilineTextAlignment(.center)
+                        Spacer(minLength: 8)
 
-                    phoneFeatures(pitch)
+                        Text(verbatim: "Syrup")
+                            .font(.largeTitle).bold()
 
-                    Text(LocalizedStringKey("Syrup is a one-time purchase. With Family Sharing, your whole family can use it."))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
+                        Spacer(minLength: 16)
+
+                        Text(Self.lead(for: pitch.trigger))
+                            .font(.headline)
+                            .multilineTextAlignment(.center)
+
+                        Spacer(minLength: 16)
+
+                        phoneFeatures(pitch)
+
+                        Spacer(minLength: 16)
+
+                        Text(LocalizedStringKey("Syrup is a one-time purchase. With Family Sharing, your whole family can use it."))
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.bottom, 8)
+                    .frame(minHeight: viewport.size.height)
                 }
-                .padding(.bottom, 8)
+                .scrollBounceBehavior(.basedOnSize)
             }
-            .scrollBounceBehavior(.basedOnSize)
 
             VStack(spacing: 10) {
                 // Never a hardcoded price: the live StoreKit price, or neutral wording.
