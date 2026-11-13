@@ -995,6 +995,9 @@ private struct MockStackedPanes: View {
 
 private struct PhoneWelcomeCard: View {
     @State private var animate = false
+    /// Regular width means the iPhone Duo's inner display, where the two panes sit side by side.
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    private var sideBySide: Bool { horizontalSizeClass == .regular }
 
     var body: some View {
         VStack(spacing: 24) {
@@ -1011,29 +1014,34 @@ private struct PhoneWelcomeCard: View {
                     .multilineTextAlignment(.center)
             }
 
-            Text("Waffle shows two webpages at once, one above the other, and both stay live. Follow your mail and the news, or the score and the stream, without switching tabs.")
+            Text(sideBySide
+                 ? "Waffle shows two webpages at once, side by side, and both stay live. Follow your mail and the news, or the score and the stream, without switching tabs."
+                 : "Waffle shows two webpages at once, one above the other, and both stay live. Follow your mail and the news, or the score and the stream, without switching tabs.")
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
-            // A taste of what is coming: two stacked panes and the bottom bar.
+            // A taste of what is coming: two panes (stacked, or side by side on the inner display) and the bar.
             VStack(spacing: 8) {
-                VStack(spacing: 4) {
-                    ForEach(0..<2, id: \.self) { i in
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.waffleSecondary.opacity(0.3))
-                            .frame(height: 34)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(i == 0 ? Color.accentColor : .clear, lineWidth: 2)
-                            )
-                    }
+                let panes = ForEach(0..<2, id: \.self) { i in
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.waffleSecondary.opacity(0.3))
+                        .frame(height: sideBySide ? 52 : 34)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(i == 0 ? Color.accentColor : .clear, lineWidth: 2)
+                        )
+                }
+                if sideBySide {
+                    HStack(spacing: 4) { panes }
+                } else {
+                    VStack(spacing: 4) { panes }
                 }
                 Capsule()
                     .fill(Color.waffleSecondary.opacity(0.3))
                     .frame(height: 14)
             }
-            .frame(width: 120)
+            .frame(width: sideBySide ? 160 : 120)
             .padding(.bottom, 8)
             .accessibilityHidden(true)
         }
@@ -1083,6 +1091,7 @@ private struct PhoneBarCard: View {
 }
 
 private struct PhoneDividerCard: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.onboardingCompact) private var compact
     @State private var selectedIndex = 0
     @State private var ratio = 0.5
@@ -1105,7 +1114,9 @@ private struct PhoneDividerCard: View {
             VStack(alignment: .leading, spacing: compact ? 8 : 12) {
                 ConceptPoint(number: "1", text: "Double tap the divider to split the screen evenly")
                 ConceptPoint(number: "2", text: "Maximize fills the screen with one pane. Tap it again to bring the other back")
-                ConceptPoint(number: "3", text: "Turn your iPhone sideways to put the panes side by side")
+                ConceptPoint(number: "3", text: horizontalSizeClass == .regular
+                    ? "Fold your iPhone Duo shut to stack the panes one above the other"
+                    : "Turn your iPhone sideways to put the panes side by side")
             }
             .padding(compact ? 10 : 16)
             .frame(maxWidth: .infinity, alignment: .leading)

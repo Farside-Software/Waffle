@@ -8619,6 +8619,54 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Waffle shows two webpages at once, side by side, and both stay live. Follow your mail and the news, or the score and the stream, without switching tabs.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffle muestra dos páginas web a la vez, una al lado de la otra, y las dos siguen en vivo. Sigue el correo y las noticias, o el marcador y la transmisión, sin cambiar de pestaña."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffle affiche deux pages Web à la fois, côte à côte, et les deux restent actives. Suivez vos courriels et les nouvelles, ou le pointage et la diffusion, sans changer d’onglet."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffleは2つのウェブページを左右に並べて同時に表示し、どちらもライブのままです。タブを切り替えずに、メールとニュース、あるいはスコアと配信を見続けられます。"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Fold your iPhone Duo shut to stack the panes one above the other": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cierra tu iPhone Duo para apilar los paneles uno encima del otro"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refermez votre iPhone Duo pour empiler les volets l’un au-dessus de l’autre"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone Duoを閉じると、ペインが上下に並びます"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
     }
   },
   "version": "1.1"
