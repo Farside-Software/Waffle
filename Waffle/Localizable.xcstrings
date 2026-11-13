@@ -1198,6 +1198,54 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Browse pages side by side and save your layouts with Waffle.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Navega por páginas en paralelo y guarda tus diseños con Waffle."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parcourez des pages côte à côte et enregistrez vos dispositions avec Waffle."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffleで複数のページを並べて閲覧し、レイアウトを保存しましょう。"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Browse pages side by side and save your presets with Waffle.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Navega por páginas en paralelo y guarda tus preajustes con Waffle."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parcourez des pages côte à côte et enregistrez vos préréglages avec Waffle."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffleで複数のページを並べて閲覧し、プリセットを保存しましょう。"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
     "Browse the web in a grid, not in tabs": {
       "extractionState": "manual",
       "localizations": {
@@ -4503,6 +4551,30 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Opens the App Store to write a review.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abre el App Store para escribir una reseña."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvre l'App Store pour rédiger un avis."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App Storeでレビューを書きます。"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
     "Opens the Syrup purchase sheet": {
       "extractionState": "manual",
       "localizations": {
@@ -5122,6 +5194,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "クイック保存は選択中のセルのページをブックマークします"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Rate Waffle": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valorar Waffle"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Évaluer Waffle"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffleを評価"
           }
         }
       },
@@ -6400,6 +6496,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "プリセットを共有"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Share Waffle": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compartir Waffle"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partager Waffle"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffleを共有"
           }
         }
       },

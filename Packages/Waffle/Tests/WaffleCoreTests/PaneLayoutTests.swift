@@ -6,6 +6,7 @@
 //
 
 import CoreGraphics
+import Foundation
 import Testing
 @testable import WaffleCore
 
@@ -496,7 +497,26 @@ struct LayoutNamingTests {
     }
 
     @Test func twoLabelPublicSuffixesKeepTheSiteLabel() {
-        #expect(LayoutNaming.siteName(forAddress: "https://www.bbc.co.uk/news") == "Bbc")
+        #expect(LayoutNaming.siteName(forAddress: "https://www.bbc.co.uk/news") == "BBC")
+    }
+
+    @Test func acronymSitesAreUpperCase() {
+        #expect(LayoutNaming.siteTitle(forAddresses: ["https://www.nasa.gov", "https://www.usgs.gov"]) == "NASA + USGS")
+        #expect(LayoutNaming.siteName(forAddress: "https://cnn.com") == "CNN")
+        #expect(LayoutNaming.siteName(forAddress: "https://www.espn.com/nfl") == "ESPN")
+        #expect(LayoutNaming.siteName(forAddress: "https://nytimes.com") == "Nytimes")
+        #expect(LayoutNaming.siteName(forAddress: "https://wsj.com") == "WSJ")
+    }
+
+    @Test func ordinaryShortWordsAndLongNamesAreLeftAlone() {
+        for (address, expected) in [
+            ("https://bing.com", "Bing"), ("https://time.com", "Time"), ("https://etsy.com", "Etsy"),
+            ("https://hulu.com", "Hulu"), ("https://yelp.com", "Yelp"), ("https://apple.com", "Apple"),
+            ("https://en.wikipedia.org", "Wikipedia"), ("https://x.com", "X"), ("https://my-site.com", "My-site"),
+            ("https://ab12.com", "Ab12"),
+        ] {
+            #expect(LayoutNaming.siteName(forAddress: address) == expected, "\(address)")
+        }
     }
 
     @Test func takenNamesAreNumbered() {
@@ -518,6 +538,16 @@ struct LayoutNamingTests {
         #expect(!text.contains("1x2"))
         let grid = Preset(name: "Grid", rows: 2, cols: 2, urls: [])
         #expect(PresetShare.text(for: grid).hasPrefix("Grid (2x2)"))
+    }
+
+    @Test func sharedTextCarriesTheGetWaffleLink() {
+        let link = "https://molargiksoftware.com/go/waffle?ct=share_layout"
+        let preset = Preset(name: "Wikipedia + Apple", rows: 1, cols: 2, urls: ["https://wikipedia.org"], paneCount: 2)
+        let lines = PresetShare.text(for: preset).split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+        #expect(lines[1].hasPrefix("waffle://"))
+        #expect(lines[2] == link)
+        let grid = PresetShare.text(name: "Grid", id: UUID(), rows: 2, cols: 2, urls: ["https://a.example"])
+        #expect(grid.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)[2] == link)
     }
 }
 

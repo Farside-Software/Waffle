@@ -229,6 +229,20 @@ public struct SettingsView: View {
                         }
                     }
                     .buttonStyle(.plain)
+
+                    Link(destination: SettingsLinks.writeReview) {
+                        Label(String(localized: "Rate Waffle"), systemImage: "star")
+                    }
+                    .accessibilityHint(Text("Opens the App Store to write a review."))
+
+                    ShareLink(
+                        item: SettingsLinks.shareApp,
+                        message: Text(LocalizedStringKey(usesPaneWording
+                            ? "Browse pages side by side and save your layouts with Waffle."
+                            : "Browse pages side by side and save your presets with Waffle."))
+                    ) {
+                        Label(String(localized: "Share Waffle"), systemImage: "square.and.arrow.up")
+                    }
                 }
 
                 #if DEBUG
@@ -277,5 +291,12 @@ public struct SettingsView: View {
         dismiss()
     }
 }
-#endif
 
+/// Outbound links for rating and sharing Waffle; `ct` attributes installs to the source.
+enum SettingsLinks {
+    /// Opens the App Store's write-a-review page directly.
+    static let writeReview = URL(string: "https://apps.apple.com/app/id6751783473?action=write-review")!
+    /// What "Share Waffle" hands to the share sheet.
+    static let shareApp = URL(string: "https://molargiksoftware.com/go/waffle?ct=share_app")!
+}
+#endif
