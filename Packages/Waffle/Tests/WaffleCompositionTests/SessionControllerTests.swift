@@ -62,57 +62,133 @@ struct SessionControllerTests {
             presetDonator: donator,
             reviewRequester: reviewRequester,
             appVersion: "1.5.0",
-            blocksContent: false
+            blocksContent: false,
+            reviewDelay: .zero
         )
     }
 
     // MARK: - Review milestones
 
-    @Test func secondSavedPresetRequestsReviewOnce() throws {
+    @Test func secondSavedPresetRequestsReviewOnce() async throws {
         let requester = FakeReviewRequester()
         let session = try makeSession(purchased: true, reviewRequester: requester)
         session.grid.makeInitialItem()
 
         session.saveCurrentGridAsPreset()
+        await session.reviewTask?.value
         #expect(requester.requestCount == 0)
         session.saveCurrentGridAsPreset()
+        await session.reviewTask?.value
         #expect(requester.requestCount == 1)
         session.saveCurrentGridAsPreset()
+        await session.reviewTask?.value
         #expect(requester.requestCount == 1)
     }
 
-    @Test func sidebarPresetSavesCountTowardTheMilestone() throws {
+    @Test func sidebarPresetSavesCountTowardTheMilestone() async throws {
         let requester = FakeReviewRequester()
         let session = try makeSession(purchased: true, reviewRequester: requester)
         let sidebar = session.makeSidebarModel()
 
         sidebar.savePreset(named: "One", rows: 1, cols: 1, urls: ["https://apple.com"])
         session.saveCurrentGridAsPreset()
+        await session.reviewTask?.value
         #expect(requester.requestCount == 1)
     }
 
-    @Test func firstLargeGridRequestsReviewOncePerVersion() throws {
+    @Test func firstLargeGridRequestsReviewOncePerVersion() async throws {
         let requester = FakeReviewRequester()
         let session = try makeSession(purchased: true, reviewRequester: requester)
         session.grid.makeInitialItem()
 
         session.setGridSize(rows: 2, cols: 2)
+        await session.reviewTask?.value
         #expect(requester.requestCount == 0)
         session.setGridSize(rows: 3, cols: 3)
+        await session.reviewTask?.value
         #expect(requester.requestCount == 1)
         session.setGridSize(rows: 4, cols: 4)
+        await session.reviewTask?.value
         #expect(requester.requestCount == 1)
         // The preset milestone is still blocked for this version.
         session.saveCurrentGridAsPreset()
         session.saveCurrentGridAsPreset()
+        await session.reviewTask?.value
         #expect(requester.requestCount == 1)
     }
 
-    @Test func freeUsersNeverReachTheLargeGridMilestone() throws {
+    @Test func freeUsersNeverReachTheLargeGridMilestone() async throws {
         let requester = FakeReviewRequester()
         let session = try makeSession(purchased: false, reviewRequester: requester)
         session.grid.makeInitialItem()
         session.setGridSize(rows: 3, cols: 3)
+        await session.reviewTask?.value
+        #expect(requester.requestCount == 0)
+    }
+
+    @Test func layoutSaveWaitsForTheSavedToastToGo() async throws {
+        let requester = FakeReviewRequester()
+        let session = try makeSession(purchased: true, reviewRequester: requester)
+        session.grid.makeInitialItem()
+        #expect(session.savePaneLayout(named: "One"))
+        #expect(session.savePaneLayout(named: "Two"))
+        #expect(session.errorHandler.toastMessage != nil)
+        try await Task.sleep(for: .milliseconds(100))
+        #expect(requester.requestCount == 0, "the toast is still up")
+        session.errorHandler.dismissToast()
+        await session.reviewTask?.value
+        #expect(requester.requestCount == 1)
+    }
+
+    @Test func thirdOpenOfASavedLayoutRequestsReview() async throws {
+        let requester = FakeReviewRequester()
+        let session = try makeSession(purchased: true, reviewRequester: requester)
+        session.grid.makeInitialItem()
+        let preset = try session.savePreset(named: "Saved", rows: 1, cols: 1, urls: [""])
+        for _ in 1...2 {
+            session.applyPaneLayout(preset, mode: .compact)
+            await session.reviewTask?.value
+            #expect(requester.requestCount == 0)
+        }
+        session.applyPaneLayout(preset, mode: .compact)
+        await session.reviewTask?.value
+        #expect(requester.requestCount == 1)
+        session.applyPaneLayout(preset, mode: .compact)
+        await session.reviewTask?.value
+        #expect(requester.requestCount == 1, "once per version")
+    }
+
+    @Test func thirdOpenViaTheGridPathRequestsReview() async throws {
+        let requester = FakeReviewRequester()
+        let session = try makeSession(purchased: true, reviewRequester: requester)
+        session.grid.makeInitialItem()
+        let preset = try session.savePreset(named: "Saved", rows: 1, cols: 1, urls: [""])
+        for _ in 1...3 { session.applyPreset(preset) }
+        await session.reviewTask?.value
+        #expect(requester.requestCount == 1)
+    }
+
+    @Test func stayQuietWhileThePaywallIsUp() async throws {
+        let requester = FakeReviewRequester()
+        let session = try makeSession(purchased: true, reviewRequester: requester)
+        session.grid.makeInitialItem()
+        session.saveCurrentGridAsPreset()
+        session.presentSyrupSheet = true
+        session.saveCurrentGridAsPreset()
+        await session.reviewTask?.value
+        #expect(session.isReviewBlocked)
+        #expect(requester.requestCount == 0)
+    }
+
+    @Test func stayQuietWhileAnErrorAlertIsUp() async throws {
+        let requester = FakeReviewRequester()
+        let session = try makeSession(purchased: true, reviewRequester: requester)
+        session.grid.makeInitialItem()
+        session.saveCurrentGridAsPreset()
+        session.errorHandler.showNetworkError("offline")
+        session.saveCurrentGridAsPreset()
+        await session.reviewTask?.value
+        #expect(session.isReviewBlocked)
         #expect(requester.requestCount == 0)
     }
 

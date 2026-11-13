@@ -28,7 +28,7 @@ struct ReviewMilestonePolicyTests {
         #expect(policy.recordPresetSaved(appVersion: "1.5.0") == true)
         #expect(policy.recordPresetSaved(appVersion: "1.5.0") == false)
         #expect(policy.presetSaveCount == 3)
-        #expect(policy.lastPromptedVersion == "1.5.0")
+        #expect(policy.lastPromptedVersion == nil, "recording never claims; delivery does")
     }
 
     @Test("first 3x3+ grid prompts once; smaller grids never do")
@@ -41,18 +41,41 @@ struct ReviewMilestonePolicyTests {
         #expect(policy.recordGridShown(rows: 4, cols: 4, appVersion: "1.6.0") == false)
     }
 
-    @Test("never prompts twice on the same version across milestones")
+    @Test("third open of a saved layout prompts")
+    func thirdLayoutOpenPrompts() {
+        let policy = ReviewMilestonePolicy(defaults: FakeKeyValueStore())
+        #expect(policy.recordLayoutOpened(appVersion: "1.5.0") == false)
+        #expect(policy.recordLayoutOpened(appVersion: "1.5.0") == false)
+        #expect(policy.recordLayoutOpened(appVersion: "1.5.0") == true)
+        #expect(policy.recordLayoutOpened(appVersion: "1.5.0") == false)
+        #expect(policy.layoutOpenCount == 4)
+    }
+
+    @Test("claiming marks the version and refuses a second claim")
+    func claimOncePerVersion() {
+        let policy = ReviewMilestonePolicy(defaults: FakeKeyValueStore())
+        #expect(policy.claimPrompt(for: "1.5.0") == true)
+        #expect(policy.claimPrompt(for: "1.5.0") == false)
+        #expect(policy.claimPrompt(for: "1.6.0") == true)
+    }
+
+    @Test("a claimed version blocks every milestone")
     func oncePerVersion() {
         let policy = ReviewMilestonePolicy(defaults: FakeKeyValueStore())
         #expect(policy.recordGridShown(rows: 3, cols: 3, appVersion: "1.5.0") == true)
+        _ = policy.claimPrompt(for: "1.5.0")
         _ = policy.recordPresetSaved(appVersion: "1.5.0")
         #expect(policy.recordPresetSaved(appVersion: "1.5.0") == false)
+        _ = policy.recordLayoutOpened(appVersion: "1.5.0")
+        _ = policy.recordLayoutOpened(appVersion: "1.5.0")
+        #expect(policy.recordLayoutOpened(appVersion: "1.5.0") == false)
     }
 
     @Test("a milestone reached on a later version prompts again")
     func newVersionPromptsAgain() {
         let policy = ReviewMilestonePolicy(defaults: FakeKeyValueStore())
         #expect(policy.recordGridShown(rows: 3, cols: 3, appVersion: "1.5.0") == true)
+        _ = policy.claimPrompt(for: "1.5.0")
         _ = policy.recordPresetSaved(appVersion: "1.6.0")
         #expect(policy.recordPresetSaved(appVersion: "1.6.0") == true)
     }

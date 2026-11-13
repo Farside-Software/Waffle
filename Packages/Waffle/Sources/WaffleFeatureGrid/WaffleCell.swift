@@ -35,6 +35,12 @@ public final class WaffleCell: Identifiable, Hashable, Codable {
         page.isLoading
     }
 
+    /// A page was asked for but nothing committed and nothing is loading: the load failed (or
+    /// has not started). Used to keep the rating alert away from error states.
+    public var hasFailedToLoad: Bool {
+        !page.isLoading && !address.isEmpty && page.url == nil
+    }
+
     /// Estimated loading progress (0.0 to 1.0)
     public var loadingProgress: Double {
         page.estimatedProgress

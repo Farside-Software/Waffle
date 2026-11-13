@@ -37,6 +37,10 @@ public final class SessionController {
     private let reviewRequester: (any ReviewRequesting)?
     private let reviewPolicy: ReviewMilestonePolicy
     private let appVersion: String
+    private let blocksContent: Bool
+    private let reviewDelay: Duration
+    /// The pending review prompt, waiting for the toast to clear; tests await it.
+    private(set) var reviewTask: Task<Void, Never>?
     private let indexer: (any LibraryIndexing)?
     private let activityAnnotator: (any BrowsingActivityAnnotating)?
 
@@ -85,7 +89,8 @@ public final class SessionController {
         activityAnnotator: (any BrowsingActivityAnnotating)? = nil,
         reviewRequester: (any ReviewRequesting)? = nil,
         appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0",
-        blocksContent: Bool = true
+        blocksContent: Bool = true,
+        reviewDelay: Duration = .milliseconds(600)
     ) {
         let container = container ?? WaffleStore.makeContainer()
         self.container = container
@@ -95,6 +100,8 @@ public final class SessionController {
         self.reviewRequester = reviewRequester
         self.reviewPolicy = ReviewMilestonePolicy(defaults: defaults)
         self.appVersion = appVersion
+        self.blocksContent = blocksContent
+        self.reviewDelay = reviewDelay
         self.indexer = indexer
         self.activityAnnotator = activityAnnotator
 
@@ -172,6 +179,7 @@ public final class SessionController {
         // Donate so Siri learns which presets the user reaches for.
         presetDonator?.donateOpenPreset(preset)
         noteGridShown()
+        noteLayoutOpened()
         return true
     }
 
@@ -260,8 +268,8 @@ public final class SessionController {
                 paneCount: count,
                 paneRatios: grid.paneRatios.array
             )
-            notePresetSaved()
             errorHandler.showToast(String(localized: "Saved as “\(saved.name)”"))
+            notePresetSaved()
             return true
         } catch {
             errorHandler.showPersistenceError(error)
@@ -279,6 +287,7 @@ public final class SessionController {
         if result.wasTruncated {
             errorHandler.showToast(String(localized: "Opened the first \(result.opened) of \(result.saved) panes"))
         }
+        noteLayoutOpened()
         return true
     }
 
@@ -286,15 +295,47 @@ public final class SessionController {
 
     /// Value moment: the user just saved a preset (sidebar or menu bar).
     public func notePresetSaved() {
-        if reviewPolicy.recordPresetSaved(appVersion: appVersion) {
-            reviewRequester?.requestReview()
-        }
+        if reviewPolicy.recordPresetSaved(appVersion: appVersion) { scheduleReview() }
     }
 
     /// Value moment: the grid reached 3x3 or larger for the first time (Syrup users).
     public func noteGridShown() {
-        if reviewPolicy.recordGridShown(rows: grid.rowCount, cols: grid.colCount, appVersion: appVersion) {
-            reviewRequester?.requestReview()
+        if reviewPolicy.recordGridShown(rows: grid.rowCount, cols: grid.colCount, appVersion: appVersion) { scheduleReview() }
+    }
+
+    /// Value moment: a saved layout was opened for the third time.
+    public func noteLayoutOpened() {
+        if reviewPolicy.recordLayoutOpened(appVersion: appVersion) { scheduleReview() }
+    }
+
+    /// Something is on screen (or in flight) that a rating alert must not interrupt: the
+    /// Syrup paywall, a purchase or restore, an error alert, a content-blocking failure,
+    /// or a page that is loading or has failed to load. Toasts and loads are waited out first.
+    var isReviewBlocked: Bool {
+        presentSyrupSheet
+            || store.isLoading
+            || errorHandler.currentError != nil
+            || (blocksContent && grid.contentBlocking.phase == .failed)
+            || grid.waffleRows.joined().contains { $0.isLoading || $0.hasFailedToLoad }
+    }
+
+    /// Worth waiting out before deciding: a page loading, or a purchase/restore/product load in flight.
+    private var isBusy: Bool { store.isLoading || grid.waffleRows.joined().contains { $0.isLoading } }
+
+    /// Asks once the "Saved as" toast (or any toast) has gone and a short beat has passed;
+    /// skips the moment if something blocking is up by then.
+    private func scheduleReview() {
+        reviewTask?.cancel()
+        reviewTask = Task { [weak self] in
+            guard let self else { return }
+            var waited = 0
+            while errorHandler.toastMessage != nil || isBusy, waited < 40 {
+                try? await Task.sleep(for: .milliseconds(250))
+                waited += 1
+            }
+            try? await Task.sleep(for: reviewDelay)
+            guard !Task.isCancelled, !isReviewBlocked else { return }
+            if reviewPolicy.claimPrompt(for: appVersion) { reviewRequester?.requestReview() }
         }
     }
 
