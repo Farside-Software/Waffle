@@ -149,7 +149,9 @@ public struct PhoneMainView: View {
                     fold: layout.fold,
                     focusedPaneID: focusedPaneID,
                     leadingDisplayCorners: toolbar ? Self.paneCorners(mode: mode) : (isDesk ? (Self.paneCorners(mode: mode).top, 14) : nil),
-                    trailingTopInset: statusInStrip ? inset.top : 0,
+                    // Only a pane that reaches the trailing screen edge (Desk Mode's upright half) sits
+                    // under the status items; with the toolbar strip the panes stop short of them.
+                    trailingTopInset: (statusInStrip && !toolbar) ? inset.top : 0,
                     onAddPane: { session.addPane(mode: mode, isFoldable: Self.isFoldableDevice) }
                 )
                 .environment(\.duoPanelDense, mode == .inner)
