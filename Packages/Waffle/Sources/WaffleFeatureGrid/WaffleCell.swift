@@ -27,6 +27,10 @@ public final class WaffleCell: Identifiable, Hashable, Codable {
     /// A load requested while the rule lists were still compiling; run once they are ready.
     @ObservationIgnored var pendingLoad: String?
     public var address: String = ""
+    /// Why the last load failed (offline, unknown host, refused connection); nil while the
+    /// page loads or shows. Drives the failure overlay.
+    public internal(set) var loadError: Error?
+    @ObservationIgnored private var loadTask: Task<Void, Never>?
     /// Auto-refresh cadence; `GridModel` owns the timer that honors it.
     public var refreshInterval: RefreshInterval = .off
 
@@ -84,7 +88,24 @@ public final class WaffleCell: Identifiable, Hashable, Codable {
             return
         }
         pendingLoad = nil
-        self.page.load(URL(string: urlString))
+        track { $0.load(URL(string: urlString)) }
+    }
+
+    /// Follows a started navigation so a failure can be shown instead of a blank page.
+    private func track<Events: AsyncSequence>(_ start: @escaping @MainActor (WebPage) -> Events) {
+        loadTask?.cancel()
+        loadError = nil
+        loadTask = Task { @MainActor [weak self] in
+            do {
+                guard let page = self?.page else { return }
+                for try await _ in start(page) {}
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled else { return }
+                self?.loadError = error
+            }
+        }
     }
 
     /// Re-reads the page's blocked-item counter (cheap; no-op when blocking is inactive).
@@ -102,6 +123,10 @@ public final class WaffleCell: Identifiable, Hashable, Codable {
     }
 
     public func reloadCell() {
+        if loadError != nil, let url = URL(string: address) {
+            track { $0.load(url) }
+            return
+        }
         self.page.reload()
     }
 
@@ -109,11 +134,13 @@ public final class WaffleCell: Identifiable, Hashable, Codable {
 
     public func goBack() {
         guard let item = page.backForwardList.backList.last else { return }
+        loadError = nil
         page.load(item)
     }
 
     public func goForward() {
         guard let item = page.backForwardList.forwardList.first else { return }
+        loadError = nil
         page.load(item)
     }
 

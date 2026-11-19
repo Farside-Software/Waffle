@@ -10530,6 +10530,78 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Can't Open This Page": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se puede abrir esta página"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d’ouvrir cette page"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このページを開けません"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Try Again": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reintentar"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réessayer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再試行"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Check your connection and the address, then try again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revisa tu conexión y la dirección, e inténtalo de nuevo."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifiez votre connexion et l’adresse, puis réessayez."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "接続とアドレスを確認して、もう一度お試しください。"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
     }
   },
   "version": "1.1"

@@ -115,6 +115,11 @@ struct WaffleCellContainer: View {
                     }
             }
         }
+        .overlay {
+            if waffleCell.loadError != nil, !isEmpty, !waffleCell.isLoading {
+                LoadFailureView(retry: { waffleCell.reloadCell() })
+            }
+        }
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
         .overlay {
             if isPoppedOut {
