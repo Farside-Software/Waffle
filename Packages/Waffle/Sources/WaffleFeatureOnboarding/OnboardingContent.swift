@@ -46,6 +46,8 @@ struct OnboardingPage: Identifiable {
     let subtitle: LocalizedStringKey
     var features: [OnboardingFeature] = []
     var footnote: LocalizedStringKey?
+    /// iPhone Duo: the demo shows the trailing toolbar instead of the bottom bar.
+    var usesToolbar = false
 
     var id: Int { Self.order(kind) }
     private static func order(_ kind: Kind) -> Int {
@@ -144,7 +146,8 @@ struct OnboardingPage: Identifiable {
             .init(systemImage: "hand.tap", title: "Tap a pane", detail: "The toolbar controls the selected pane."),
             .init(systemImage: "keyboard", title: "Type an address or a search", detail: "Tap the address, type, and anything that is not a web address becomes a search."),
             .init(systemImage: "ellipsis", title: "The ••• menu", detail: "It adds panes, opens layouts and bookmarks, and Settings."),
-        ]
+        ],
+        usesToolbar: true
     )
 
     static let size = OnboardingPage(

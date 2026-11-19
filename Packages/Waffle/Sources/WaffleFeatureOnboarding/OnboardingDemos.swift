@@ -278,22 +278,80 @@ struct LibraryDemo: View {
 /// Two stacked panes with the bar underneath; tapping a pane selects it.
 struct PanesDemo: View {
     var compact = false
+    /// iPhone Duo: the controls are a toolbar on the trailing edge (with the address bar turned
+    /// on its side), not a bar under the panes.
+    var toolbar = false
     @Environment(\.demoFills) private var fills
     @State private var selected = 0
 
     var body: some View {
-        VStack(spacing: 10) {
-            VStack(spacing: 8) {
-                ForEach(0..<2, id: \.self) { index in
-                    DemoCell(site: DemoSite.samples[index], isSelected: selected == index, compact: compact) { selected = index }
-                        .frame(height: fills ? nil : (compact ? 64 : 84))
-                        .frame(maxHeight: fills ? .infinity : nil)
+        Group {
+            if toolbar {
+                HStack(spacing: 10) {
+                    panes(spacing: 8)
+                    DemoToolbar(address: DemoSite.samples[selected].address)
+                }
+            } else {
+                VStack(spacing: 10) {
+                    panes(spacing: 8)
+                    DemoAddressBar(address: DemoSite.samples[selected].address, showsMenu: true)
                 }
             }
-            DemoAddressBar(address: DemoSite.samples[selected].address, showsMenu: true)
         }
         .onboardingCard(padding: 12)
         .frame(maxHeight: fills ? .infinity : nil)
+    }
+
+    private func panes(spacing: CGFloat) -> some View {
+        VStack(spacing: spacing) {
+            ForEach(0..<2, id: \.self) { index in
+                DemoCell(site: DemoSite.samples[index], isSelected: selected == index, compact: compact) { selected = index }
+                    .frame(height: fills ? nil : (compact ? (toolbar ? 110 : 64) : (toolbar ? 150 : 84)))
+                    .frame(maxHeight: fills ? .infinity : nil)
+            }
+        }
+    }
+}
+
+/// The Duo's trailing toolbar in miniature: back, the address bar turned 90 degrees, reload, menu.
+struct DemoToolbar: View {
+    let address: String
+
+    var body: some View {
+        VStack(spacing: 8) {
+            circle("chevron.backward")
+            VStack(spacing: 6) {
+                Image(systemName: "globe").font(.caption).foregroundStyle(.secondary).padding(.top, 8)
+                GeometryReader { g in
+                    Text(verbatim: address)
+                        .font(.footnote)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .contentTransition(.interpolate)
+                        .frame(width: max(g.size.height, 1), height: g.size.width)
+                        .rotationEffect(.degrees(-90))
+                        .position(x: g.size.width / 2, y: g.size.height / 2)
+                }
+                .padding(.bottom, 6)
+            }
+            .frame(width: 34)
+            .frame(maxHeight: .infinity)
+            .background(Color(uiColor: .tertiarySystemFill), in: Capsule())
+            circle("arrow.clockwise")
+            circle("ellipsis")
+        }
+        .padding(6)
+        .background(Color(uiColor: .tertiarySystemFill).opacity(0.5), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .animation(.easeInOut(duration: 0.2), value: address)
+        .accessibilityHidden(true)
+    }
+
+    private func circle(_ name: String) -> some View {
+        Image(systemName: name)
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .frame(width: 34, height: 34)
+            .background(Color(uiColor: .tertiarySystemFill), in: Circle())
     }
 }
 

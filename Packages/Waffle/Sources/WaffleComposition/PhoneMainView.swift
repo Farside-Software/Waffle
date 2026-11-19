@@ -131,7 +131,7 @@ public struct PhoneMainView: View {
             let stripWidth = max(inset.trailing, PhoneScreenLayout.toolbarStripWidth)
             let layout = PhoneScreenLayout.compute(
                 size: screenSize,
-                safe: (inset.top, inset.leading, toolbar ? 0 : (mode == .inner && !isEditingAddress ? max(inset.bottom - Self.innerBottomGive, 0) : inset.bottom), inset.trailing),
+                safe: (inset.top, inset.leading, toolbar ? Self.bottomBand : (mode == .inner && !isEditingAddress ? max(inset.bottom - Self.innerBottomGive, 0) : inset.bottom), inset.trailing),
                 fold: reading?.gutter,
                 mode: mode,
                 deskMode: isDesk,
@@ -148,7 +148,7 @@ public struct PhoneMainView: View {
                     primaryIsHorizontal: layout.primaryIsHorizontal,
                     fold: layout.fold,
                     focusedPaneID: focusedPaneID,
-                    leadingDisplayCorners: toolbar ? (Self.displayCornerTop, Self.displayCornerBottom) : nil,
+                    leadingDisplayCorners: toolbar ? Self.paneCorners(mode: mode) : nil,
                     trailingTopInset: statusInStrip ? inset.top : 0,
                     onAddPane: { session.addPane(mode: mode, isFoldable: Self.isFoldableDevice) }
                 )
@@ -473,7 +473,7 @@ public struct PhoneMainView: View {
         guard usesSidePanel, let seam = seam(layout: layout) else { return nil }
         // With the controls in the trailing toolbar the panel is its half's full height, down to
         // the display's bottom edge (its own content keeps clear of the home indicator).
-        let bottom = layout.bar == nil ? layout.workspace.maxY : layout.workspace.maxY + PhoneScreenLayout.margin + barHeight
+        let bottom = layout.bar == nil ? layout.workspace.maxY + Self.bottomBand : layout.workspace.maxY + PhoneScreenLayout.margin + barHeight
         if layout.primaryIsHorizontal {
             let top = layout.workspace.minY
             return CGRect(x: seam.bStart, y: top, width: layout.workspace.maxX - seam.bStart, height: bottom - top)
@@ -513,7 +513,7 @@ public struct PhoneMainView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.top, topClearance)
-        .padding(.bottom, 12)
+        .padding(.bottom, Self.bottomBand)
     }
 
     /// The address bar turned 90 degrees: a tall glass capsule, as wide as the round buttons and
@@ -624,10 +624,17 @@ public struct PhoneMainView: View {
     static let innerBarHeight: CGFloat = 50
     static let innerBottomGive: CGFloat = 16
     static let hintHeight: CGFloat = 20
-    /// The Duo's display corner radius, which the panes' outer corners follow. The panes run to
-    /// the bottom edge; the home indicator overlaps the page, as it does in Safari.
-    static let displayCornerTop: CGFloat = 38
-    static let displayCornerBottom: CGFloat = 38
+    /// A small band below the panes for the home indicator (the old bar left about 50 pt).
+    static let bottomBand: CGFloat = 14
+    /// The Duo's real display corner radii (the simulator device profile, in points): 55 on every
+    /// corner of the inner display; the outer display is 8 on the hinge side and 59 on the other.
+    /// The panes' leading corners sit flush on the leading edge, so the top one takes the display
+    /// radius itself and the bottom one the radius less the band below it (concentric). The
+    /// outer display's leading corners are the 8 pt ones: smaller than a pane's own radius, so
+    /// panes there keep their usual corners.
+    static func paneCorners(mode: PaneMode) -> (top: CGFloat, bottom: CGFloat) {
+        mode == .inner ? (55, 55 - bottomBand) : (8, 8)
+    }
     /// The system draws the clock and status at the top of the trailing strip.
     static let toolbarTopClearance: CGFloat = 112
 

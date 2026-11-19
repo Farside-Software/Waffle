@@ -151,7 +151,7 @@ struct OnboardingPageView: View {
         case .grid: SelectDemo(compact: compact)
         case .shape: ShapeDemo(compact: compact)
         case .library: LibraryDemo()
-        case .panes: PanesDemo(compact: compact)
+        case .panes: PanesDemo(compact: compact, toolbar: page.usesToolbar)
         case .size: SizeDemo(compact: compact)
         case .layouts: LayoutsDemo()
         case .unfold: UnfoldDemo()
