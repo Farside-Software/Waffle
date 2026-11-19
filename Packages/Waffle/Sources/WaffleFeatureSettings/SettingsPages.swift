@@ -40,8 +40,10 @@ extension SettingsView {
             }
 
             #if DEBUG
+            if !UserDefaults.standard.bool(forKey: "WaffleDebugHideDebugRow") {
             Section {
                 pageRow(.debug, "Debug", "ladybug.fill", .pink, value: nil, selection: selection)
+            }
             }
             #endif
         }

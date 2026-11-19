@@ -248,6 +248,9 @@ public struct PhoneMainView: View {
             session.adaptWorkspaceToEntitlement()
             sidebarModel.load()
             #if DEBUG
+            DebugLibrarySeeding.applyIfRequested(to: sidebarModel)
+            #endif
+            #if DEBUG
             DebugPaneSeeding.applyIfRequested(to: grid)
             let defaults = UserDefaults.standard
             if defaults.bool(forKey: "WaffleDebugMaximize") { isMaximized = true }

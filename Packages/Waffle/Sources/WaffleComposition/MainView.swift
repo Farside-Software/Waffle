@@ -102,6 +102,7 @@ public struct MainView: View {
                 }
                 #if DEBUG
                 DebugGridSeeding.applyIfRequested(to: grid)
+                DebugLibrarySeeding.applyIfRequested(to: sidebarModel)
                 switch UserDefaults.standard.string(forKey: "WaffleDebugSheet") {
                 case "settings": showSettingsSheet = true
                 case "syrup": session.requestSyrup()
