@@ -216,6 +216,7 @@ extension SettingsView {
                 Link(destination: SettingsLinks.writeReview) {
                     SettingsIconLabel(title: "Rate Waffle", systemImage: "star.fill", tint: .yellow)
                 }
+                .foregroundStyle(.primary)
                 .accessibilityHint(Text("Opens the App Store to write a review."))
                 ShareLink(
                     item: SettingsLinks.shareApp,
@@ -225,6 +226,7 @@ extension SettingsView {
                 ) {
                     SettingsIconLabel(title: "Share Waffle", systemImage: "square.and.arrow.up.fill", tint: .green)
                 }
+                .foregroundStyle(.primary)
             }
         }
         .navigationTitle(Text("Help & Feedback"))
@@ -298,6 +300,7 @@ extension SettingsView {
             } label: {
                 Label(String(localized: "Add Example Bookmarks & Presets"), systemImage: "plus.square.on.square")
             }
+            .foregroundStyle(.primary)
         }
         .navigationTitle(Text("Debug"))
         .navigationBarTitleDisplayMode(.inline)
