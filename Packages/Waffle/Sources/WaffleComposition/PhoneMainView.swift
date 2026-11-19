@@ -144,9 +144,28 @@ public struct PhoneMainView: View {
                     }
 
                 if let bar = layout.bar {
-                    controlBar(width: bar.width)
-                        .frame(width: bar.width, height: bar.height)
-                        .offset(x: bar.minX - origin.x, y: bar.minY - origin.y)
+                    if let halves = splitBarRects(layout: layout, bar: bar) {
+                        // Unfolded Duo: one half of the bar on each side of the hinge, so no
+                        // control sits in (or straddles) the fold.
+                        controlBar(width: halves.leading.width, side: .leading)
+                            .frame(width: halves.leading.width, height: halves.leading.height)
+                            .offset(x: halves.leading.minX - origin.x, y: halves.leading.minY - origin.y)
+                        controlBar(width: halves.trailing.width, side: .trailing)
+                            .frame(width: halves.trailing.width, height: halves.trailing.height)
+                            .offset(x: halves.trailing.minX - origin.x, y: halves.trailing.minY - origin.y)
+                    } else {
+                        controlBar(width: bar.width, side: .whole)
+                            .frame(width: bar.width, height: bar.height)
+                            .offset(x: bar.minX - origin.x, y: bar.minY - origin.y)
+                    }
+                }
+
+                if let panel = sidePanelRect(layout: layout) {
+                    if session.presentSyrupSheet {
+                        sidePanel(panel, origin: origin) { syrupSheet }
+                    } else if showLayoutsSheet {
+                        sidePanel(panel, origin: origin) { layoutsSheet }
+                    }
                 }
 
                 if let deck = layout.deck {
@@ -170,6 +189,8 @@ public struct PhoneMainView: View {
         .background(Color.wafflePrimary.opacity(0.3).ignoresSafeArea())
         .observingHinge($hinge)
         .animation(.snappy, value: isEditingAddress)
+        .animation(.snappy, value: showLayoutsSheet)
+        .animation(.snappy, value: session.presentSyrupSheet)
         .onAppear {
             grid.contentBlocking.start()
             if !grid.restoreFromSnapshotIfAvailable() {
@@ -223,17 +244,10 @@ public struct PhoneMainView: View {
             }
             grid.setAppActive(newPhase == .active)
         }
-        .sheet(isPresented: $session.presentSyrupSheet) {
-            SyrupView(
-                store: session.store,
-                phonePitch: SyrupPitch(
-                    trigger: session.syrupTrigger,
-                    device: mode == .inner ? .iPhoneDuoInner : (Self.isFoldableDevice ? .iPhoneDuoOuter : .iPhone)
-                ),
-                onPurchased: { self.session.presentSyrupSheet = false },
-                onClose: { self.session.presentSyrupSheet = false }
-            )
-        }
+        .sheet(isPresented: Binding(
+            get: { session.presentSyrupSheet && !usesSidePanel },
+            set: { session.presentSyrupSheet = $0 }
+        )) { syrupSheet }
         .settingsPresentation(isPresented: $showSettingsSheet, fullPage: mode == .inner && Self.isFoldableDevice) {
             SettingsView(
                 model: session.makeSettingsModel(),
@@ -253,7 +267,10 @@ public struct PhoneMainView: View {
                 )
             )
         }
-        .sheet(isPresented: $showLayoutsSheet) { layoutsSheet }
+        .sheet(isPresented: Binding(
+            get: { showLayoutsSheet && !usesSidePanel },
+            set: { showLayoutsSheet = $0 }
+        )) { layoutsSheet }
         .userActivity(
             "com.molargiksoftware.Waffle.browsing",
             isActive: !(grid.selectedCell?.address.isEmpty ?? true)
@@ -277,6 +294,71 @@ public struct PhoneMainView: View {
             get: { self.session.errorHandler.currentError },
             set: { _ in self.session.errorHandler.dismiss() }
         ))
+    }
+
+    // MARK: - Unfolded Duo geometry
+
+    private var syrupSheet: some View {
+        SyrupView(
+            store: session.store,
+            phonePitch: SyrupPitch(
+                trigger: session.syrupTrigger,
+                device: mode == .inner ? .iPhoneDuoInner : (Self.isFoldableDevice ? .iPhoneDuoOuter : .iPhone)
+            ),
+            onPurchased: { self.session.presentSyrupSheet = false },
+            onClose: { self.session.presentSyrupSheet = false }
+        )
+    }
+
+    private func sidePanel<Content: View>(_ panel: CGRect, origin: CGPoint, @ViewBuilder content: () -> Content) -> some View {
+        content()
+            .frame(width: panel.width, height: panel.height)
+            .background(Color(.systemBackground))
+            .clipShape(.rect(cornerRadius: 14))
+            .shadow(color: .black.opacity(0.18), radius: 12, y: 4)
+            .offset(x: panel.minX - origin.x, y: panel.minY - origin.y)
+            .transition(.move(edge: .trailing).combined(with: .opacity))
+            .zIndex(2)
+    }
+
+    /// The unfolded Duo's inner display: panes sit side by side around a vertical fold.
+    private var usesSidePanel: Bool { mode == .inner && !inDeskMode }
+
+    /// Where group A ends and group B begins on the unfolded Duo (screen coordinates), taken
+    /// from the same frames the panes use, so bars and panels line up with the pane edges
+    /// whether the fold is flat or partly open.
+    private func seam(layout: PhoneScreenLayout) -> (aEnd: CGFloat, bStart: CGFloat)? {
+        guard mode == .inner, layout.primaryIsHorizontal else { return nil }
+        let frames = PaneFrameCalculator.frames(
+            count: max(grid.paneCount, 2),
+            ratios: grid.paneRatios,
+            size: layout.workspace.size,
+            primaryIsHorizontal: true,
+            fold: layout.fold
+        )
+        let slots = PaneFrameCalculator.slots(count: max(grid.paneCount, 2), primaryIsHorizontal: true)
+        guard let a = slots.a.first, let b = slots.b.first, a < frames.panes.count, b < frames.panes.count else { return nil }
+        return (frames.panes[a].maxX + layout.workspace.minX, frames.panes[b].minX + layout.workspace.minX)
+    }
+
+    /// The two halves of the control bar either side of the seam (screen coordinates).
+    private func splitBarRects(layout: PhoneScreenLayout, bar: CGRect) -> (leading: CGRect, trailing: CGRect)? {
+        guard let seam = seam(layout: layout) else { return nil }
+        let left = layout.workspace.minX, right = layout.workspace.maxX
+        guard seam.aEnd - left > 120, right - seam.bStart > 120 else { return nil }
+        return (
+            CGRect(x: left, y: bar.minY, width: seam.aEnd - left, height: bar.height),
+            CGRect(x: seam.bStart, y: bar.minY, width: right - seam.bStart, height: bar.height)
+        )
+    }
+
+    /// Layouts & Bookmarks and the Syrup sheet on the unfolded Duo: a panel over group B's
+    /// side (leading edge on the pane edge, never across the hinge).
+    private func sidePanelRect(layout: PhoneScreenLayout) -> CGRect? {
+        guard usesSidePanel, let seam = seam(layout: layout) else { return nil }
+        let top = layout.workspace.minY
+        let bottom = layout.workspace.maxY + PhoneScreenLayout.margin + barHeight
+        return CGRect(x: seam.bStart, y: top, width: layout.workspace.maxX - seam.bStart, height: bottom - top)
     }
 
     private func selectedPaneIsOnFarSide(primaryIsHorizontal: Bool) -> Bool {
@@ -311,11 +393,15 @@ public struct PhoneMainView: View {
         return PhoneDuo.isDuo
     }
 
-    private func controlBar(width: CGFloat) -> some View {
+    enum BarSide { case whole, leading, trailing }
+
+    private func controlBar(width: CGFloat, side: BarSide) -> some View {
         @Bindable var grid = grid
         let showsMaximize = PaneFocus.offersMaximize(count: grid.paneCount, mode: mode, isDeskMode: inDeskMode)
         let buttonCount = (showsMaximize ? 4 : 3)
-        let reserved = CGFloat(buttonCount) * 44 + CGFloat(buttonCount) * 8 + 16 + (showsSwitcher ? Self.switcherWidth + 8 : 0)
+        let reserved = side == .leading
+            ? CGFloat(52 + 16)
+            : CGFloat(buttonCount) * 44 + CGFloat(buttonCount) * 8 + 16 + (showsSwitcher ? Self.switcherWidth + 8 : 0)
 
         return VStack(spacing: 0) {
             if showsUnfoldHint && !isEditingAddress {
@@ -328,11 +414,13 @@ public struct PhoneMainView: View {
                     .dynamicTypeSize(...Self.controlTypeLimit)
             }
             HStack(spacing: 8) {
-                if !isEditingAddress {
+                if side == .trailing { Spacer(minLength: 0) }
+                if side != .trailing && !isEditingAddress {
                     circleButton("Back", systemImage: "chevron.backward") { grid.selectedCell?.goBack() }
                         .opacity(grid.selectedCell?.canGoBack == true ? 1 : 0.45)
                 }
 
+                if side != .trailing {
                 AddressBarView(
                     text: $grid.addressText,
                     placeholder: String(localized: "Search or enter a URL"),
@@ -346,10 +434,11 @@ public struct PhoneMainView: View {
                     dismissEditingToken: dismissEditingToken,
                     phoneStyle: true
                 )
+                }
 
                 if isEditingAddress {
-                    cancelEditingButton
-                } else {
+                    if side != .trailing { cancelEditingButton }
+                } else if side != .leading {
                     if showsSwitcher { paneSwitcher }
                     if showsMaximize {
                         circleButton(
