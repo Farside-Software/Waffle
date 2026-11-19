@@ -109,7 +109,8 @@ struct WaffleCellContainer: View {
                         waffleCell.loadURL(urlString: waffleCell.address)
                     }
                     .onChange(of: waffleCell.page.url) {
-                        if isPhonePane, waffleCell.page.url == nil { return }
+                        // A failed load leaves no URL: keep the address so the failure state can retry it.
+                        if waffleCell.page.url == nil { return }
                         waffleCell.address = waffleCell.page.url?.absoluteString ?? ""
                         model.noteAddressChange(for: waffleCell)
                     }

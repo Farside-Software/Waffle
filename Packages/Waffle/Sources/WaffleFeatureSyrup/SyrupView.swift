@@ -20,6 +20,10 @@ public struct SyrupView: View {
     private let phonePitch: SyrupPitch?
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.duoPanelDense) private var dense
+    @Environment(\.dynamicTypeSize) private var typeSize
+    /// The unfolded Duo's panel at large text: the pitch loses its second paragraph and Buy and
+    /// Restore sit side by side, so the 'Always free' card is not cut by the pinned buy area.
+    private var tightPanel: Bool { dense && typeSize >= .xxLarge }
 
     public init(store: StoreManager, phonePitch: SyrupPitch? = nil, onPurchased: (() -> Void)? = nil, onClose: (() -> Void)? = nil) {
         self.store = store
@@ -65,10 +69,6 @@ public struct SyrupView: View {
                     .font(.headline)
                     .foregroundStyle(.secondary)
 
-                Text("Unlock the full Waffle experience")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-
                 VStack(alignment: .leading, spacing: 10) {
                     Label("Up to \(AppConfiguration.maxPremiumRows)x\(AppConfiguration.maxPremiumCols) waffles (double the \(AppConfiguration.maxFreeRows)x\(AppConfiguration.maxFreeCols) limit)", systemImage: "square.grid.3x3")
                     Label("Rearrange waffles", systemImage: "arrow.left.arrow.right.square")
@@ -109,7 +109,8 @@ public struct SyrupView: View {
     }
 
     private var purchaseButtons: some View {
-        VStack(spacing: 12) {
+        let layout = tightPanel ? AnyLayout(HStackLayout(spacing: 10)) : AnyLayout(VStackLayout(spacing: 12))
+        return layout {
             Button {
                 Task {
                     let ok = await store.purchase()
@@ -261,7 +262,7 @@ public struct SyrupView: View {
             .waffleCard()
 
             // What else the purchase covers, on the other devices.
-            Group {
+            if !tightPanel { Group {
                 if pitch.device.isFoldable {
                     Text("Also unlocks Waffle on iPad: bigger grids, pop-out, fullscreen and rearranging")
                 } else {
@@ -270,7 +271,7 @@ public struct SyrupView: View {
             }
             .font(dense ? .subheadline : .subheadline)
             .foregroundStyle(.secondary)
-            .multilineTextAlignment(.center)
+            .multilineTextAlignment(.center) }
 
             // The free side, said plainly (and it fills the sheet honestly).
             Label("Always free: two panes, one saved layout, auto-refresh and content blocking", systemImage: "checkmark.circle")

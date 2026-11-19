@@ -87,7 +87,8 @@ extension SettingsView {
             syrupRow(stacked: dynamicTypeSize.isAccessibilitySize)
         }
         .buttonStyle(.plain)
-        .disabled(isSyrupEnabled)
+        // Not `.disabled`: that dims the whole row, including the thank-you line.
+        .allowsHitTesting(!isSyrupEnabled)
         .accessibilityHint(isSyrupEnabled ? Text("") : Text("Opens the Syrup purchase sheet"))
     }
 

@@ -20,6 +20,8 @@ struct SidebarSectionHeader: View {
             Group {
                 WaffleSymbolTile(systemImage: icon, side: 40)
                 Text(title)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
             }
             .font(.system(.title2, design: .rounded, weight: .bold))
 
