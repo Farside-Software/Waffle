@@ -110,6 +110,8 @@ struct PhoneLayoutsView: View {
                 .frame(minHeight: 44)
                 .contentShape(Capsule())
         }
+        // The accent gold is too light for text and glyphs on the list's white.
+        .foregroundStyle(.primary)
         // At accessibility text sizes the title and New stack instead of wrapping per character.
         return ViewThatFits(in: .horizontal) {
             HStack {
@@ -182,6 +184,7 @@ struct PhoneLayoutsView: View {
                     .frame(width: 44, height: 44)
                     .contentShape(Rectangle())
             }
+            .foregroundStyle(.primary)
             .accessibilityLabel(Text("Layout options"))
         }
         .padding(.vertical, dense ? 10 : 0)

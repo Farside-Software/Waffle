@@ -119,7 +119,7 @@ public struct PhoneMainView: View {
             let isDesk = laptopPose && session.canUseDeskMode
             let layout = PhoneScreenLayout.compute(
                 size: screenSize,
-                safe: (inset.top, inset.leading, mode == .inner ? max(inset.bottom - Self.innerBottomGive, 0) : inset.bottom, inset.trailing),
+                safe: (inset.top, inset.leading, mode == .inner && !isEditingAddress ? max(inset.bottom - Self.innerBottomGive, 0) : inset.bottom, inset.trailing),
                 fold: reading?.gutter,
                 mode: mode,
                 deskMode: isDesk,
