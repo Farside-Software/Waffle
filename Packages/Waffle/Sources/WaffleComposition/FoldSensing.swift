@@ -90,11 +90,26 @@ enum DebugPaneSeeding {
     @MainActor
     static func applyIfRequested(to grid: GridModel) {
         guard let list = UserDefaults.standard.string(forKey: "WaffleDebugPanes") else { return }
-        let urls = list.split(separator: ",").map(String.init)
+        let urls = DebugAddressTokens.expand(list.split(separator: ",").map(String.init))
         guard !urls.isEmpty else { return }
         let ratios = (UserDefaults.standard.string(forKey: "WaffleDebugRatios") ?? "")
             .split(separator: ",").compactMap { Double($0) }
         grid.applyPaneLayout(urls: urls, ratios: PaneRatios(array: ratios))
+    }
+}
+
+/// Debug address tokens for seeding states: `empty` is a start page, `error` a page that
+/// cannot load (a name that never resolves), `refused` a refused connection.
+enum DebugAddressTokens {
+    static func expand(_ list: [String]) -> [String] {
+        list.map {
+            switch $0 {
+            case "empty": ""
+            case "error": "https://nonexistent.invalid"
+            case "refused": "http://localhost:9"
+            default: $0
+            }
+        }
     }
 }
 

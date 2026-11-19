@@ -8,6 +8,7 @@
 //
 //  - `-WaffleDebugGrid "2x2|https://a,https://b,..."` fills the iPad grid (rows x cols, then
 //    the addresses in reading order). Bypasses gating.
+//  - Addresses may be `empty`, `error` or `refused` to seed a start page or a failed load.
 //  - `-WaffleDebugSheet settings|syrup|rearrange` opens that sheet on iPad.
 //
 
@@ -24,7 +25,7 @@ enum DebugGridSeeding {
         guard parts.count == 2 else { return }
         let size = parts[0].lowercased().split(separator: "x").compactMap { Int($0) }
         guard size.count == 2, size[0] > 0, size[1] > 0 else { return }
-        let urls = parts[1].split(separator: ",").map(String.init)
+        let urls = DebugAddressTokens.expand(parts[1].split(separator: ",").map(String.init))
         grid.apply(snapshot: Snapshot(rows: size[0], cols: size[1], urls: urls, selectedIndex: 0))
     }
 }
