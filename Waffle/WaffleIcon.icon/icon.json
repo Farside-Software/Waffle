@@ -1,95 +1,74 @@
 {
-  "features" : [
-    "refractivity"
+  "fill-specializations" : [
+    {
+      "value" : {
+        "linear-gradient" : [
+          "display-p3:1.00000,1.00000,1.00000,1.00000",
+          "srgb:0.91373,0.90980,0.93725,1.00000"
+        ]
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "linear-gradient" : [
+          "display-p3:0.20392,0.18824,0.23922,1.00000",
+          "srgb:0.07059,0.06275,0.08235,1.00000"
+        ]
+      }
+    }
   ],
-  "fill" : {
-    "linear-gradient" : [
-      "display-p3:0.97021,0.99805,0.99121,1.00000",
-      "display-p3:0.87158,0.65137,0.34058,1.00000"
-    ]
-  },
   "groups" : [
     {
       "layers" : [
         {
-          "image-name" : "butter.svg",
-          "name" : "butter",
-          "position" : {
-            "scale" : 1,
-            "translation-in-points" : [
-              115,
-              -115
-            ]
-          }
+          "image-name" : "3-front-butter.svg",
+          "name" : "3-front-butter"
         }
       ],
-      "refractivity" : {
-        "depth" : 0.2940234375,
-        "enabled" : true,
-        "strength" : -0.6898046875
-      },
+      "name" : "front",
       "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.6
-      },
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.2
-      }
-    },
-    {
-      "layers" : [
-        {
-          "image-name" : "waffleIcon.svg",
-          "name" : "waffleIcon"
-        }
-      ],
-      "shadow" : {
-        "kind" : "none",
-        "opacity" : 0.6
+        "kind" : "layer-color",
+        "opacity" : 0.4
       },
       "translucency" : {
         "enabled" : false,
-        "value" : 0.2
-      }
-    },
-    {
-      "blur-material" : null,
-      "layers" : [
-        {
-          "image-name" : "cells1.svg",
-          "name" : "cells1"
-        }
-      ],
-      "refractivity" : {
-        "depth" : 0.113984375,
-        "enabled" : true,
-        "strength" : 0.3473828125
-      },
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 2.36
-      },
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.2
+        "value" : 0.3
       }
     },
     {
       "layers" : [
         {
-          "image-name" : "base.svg",
-          "name" : "base"
+          "image-name" : "2-middle-pockets.svg",
+          "name" : "2-middle-pockets"
         }
       ],
+      "name" : "middle",
       "shadow" : {
         "kind" : "neutral",
-        "opacity" : 2
+        "opacity" : 0.3
       },
       "specular" : true,
       "translucency" : {
-        "enabled" : true,
-        "value" : 0.2
+        "enabled" : false,
+        "value" : 0.3
+      }
+    },
+    {
+      "layers" : [
+        {
+          "image-name" : "1-back-waffle.svg",
+          "name" : "1-back-waffle"
+        }
+      ],
+      "name" : "back",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.3
+      },
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.3
       }
     }
   ],
