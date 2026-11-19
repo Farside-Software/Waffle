@@ -35,29 +35,31 @@ struct OnboardingSplash: View {
             OnboardingStyle.background.ignoresSafeArea()
 
             GeometryReader { proxy in
-                // Unfolded Duo: the content moves to the middle of the left half, so neither the
-                // mark, the text nor Get Started sits on the hinge. (The launch screen starts at
-                // the true centre; the move is eased.)
-                let centerX = settled ? (leftHalfCenter(proxy) ?? proxy.size.width / 2) : proxy.size.width / 2
+                // Unfolded Duo: the text and Get Started take the left half and the mark the
+                // right, so neither sits on the hinge and both halves are used. (The launch
+                // screen starts at the true centre; the move is eased.)
+                let hinge = proxy.foldCenterXIfAvailable
+                let onFold = settled && hinge != nil
+                let centerX = onFold ? (hinge! / 2) : proxy.size.width / 2
+                let markX = onFold ? hinge! + (proxy.size.width - hinge!) / 2 : proxy.size.width / 2
+                let markSide: CGFloat = onFold ? 300 : side
                 WaffleMark(bodyProgress: body0, rowProgress: rows, butterProgress: butter)
-                    .frame(width: side, height: side)
-                    .position(x: centerX, y: proxy.size.height / 2 - lift(proxy))
+                    .frame(width: markSide, height: markSide)
+                    .position(x: markX, y: proxy.size.height / 2)
 
-                VStack(spacing: 10) {
+                VStack(spacing: 14) {
                     Text("Waffle")
-                        .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                        .font(onFold ? .system(size: 64, weight: .bold, design: .rounded) : .system(.largeTitle, design: .rounded, weight: .bold))
                         .accessibilityAddTraits(.isHeader)
                     Text("Browse the web in a grid, not in tabs.")
-                        .font(.title3)
+                        .font(onFold ? .title2 : .title3)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                 }
                 .accessibilityElement(children: .combine)
                 .padding(.horizontal, 32)
-                .frame(maxWidth: 520)
-                .frame(maxWidth: .infinity)
                 .frame(width: min(520, columnWidth(proxy)))
-                .position(x: centerX, y: proxy.size.height / 2 - lift(proxy) + side / 2 + 70)
+                .position(x: centerX, y: onFold ? proxy.size.height / 2 - 40 : proxy.size.height / 2 + side / 2 + 70)
                 .opacity(showsText ? 1 : 0)
                 .offset(y: showsText ? 0 : 10)
             }
@@ -88,11 +90,6 @@ struct OnboardingSplash: View {
     /// Centre of the half left of a vertical fold, in the geometry's space; nil without one.
     private func leftHalfCenter(_ proxy: GeometryProxy) -> CGFloat? {
         proxy.foldCenterXIfAvailable.map { $0 / 2 }
-    }
-
-    /// On the fold the content rides a little higher, clear of the pinned button.
-    private func lift(_ proxy: GeometryProxy) -> CGFloat {
-        settled && proxy.foldCenterXIfAvailable != nil ? 36 : 0
     }
 
     private func columnWidth(_ proxy: GeometryProxy) -> CGFloat {

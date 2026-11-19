@@ -28,6 +28,16 @@ enum OnboardingStyle {
     static var background: Color { Color(uiColor: .systemGroupedBackground) }
 }
 
+private struct DemoFillsKey: EnvironmentKey { static let defaultValue = false }
+
+extension EnvironmentValues {
+    /// The unfolded Duo: a demo fills the height of its half instead of staying a small card.
+    var demoFills: Bool {
+        get { self[DemoFillsKey.self] }
+        set { self[DemoFillsKey.self] = newValue }
+    }
+}
+
 extension View {
     func onboardingCard(padding: CGFloat = 0) -> some View {
         self.padding(padding)

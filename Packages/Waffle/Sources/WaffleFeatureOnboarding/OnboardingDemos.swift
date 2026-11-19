@@ -41,6 +41,8 @@ struct DemoCell: View {
     var compact = false
     var onTap: (() -> Void)?
 
+    @Environment(\.demoFills) private var fills
+
     var body: some View {
         Button {
             onTap?()
@@ -52,10 +54,10 @@ struct DemoCell: View {
                 )
                 VStack(spacing: compact ? 2 : 4) {
                     Image(systemName: site.icon)
-                        .font(compact ? .body : .title3)
+                        .font(fills ? .largeTitle : (compact ? .body : .title3))
                         .foregroundStyle(site.tint)
                     Text(verbatim: site.address)
-                        .font(.caption2)
+                        .font(fills ? .callout : .caption2)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
@@ -85,18 +87,20 @@ struct DemoAddressBar: View {
     let address: String
     var showsMenu = false
 
+    @Environment(\.demoFills) private var fills
+
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "chevron.backward").foregroundStyle(.secondary)
             HStack(spacing: 6) {
                 Image(systemName: "arrow.clockwise").foregroundStyle(.secondary).font(.caption)
                 Text(verbatim: address)
-                    .font(.subheadline)
+                    .font(fills ? .body : .subheadline)
                     .lineLimit(1)
                     .contentTransition(.interpolate)
                 Spacer(minLength: 0)
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, fills ? 12 : 8)
             .padding(.horizontal, 12)
             .background(Color(uiColor: .tertiarySystemFill), in: Capsule())
             Image(systemName: showsMenu ? "ellipsis" : "square.grid.3x3.fill").foregroundStyle(.secondary)
@@ -117,6 +121,8 @@ struct DemoGrid: View {
     var locksBeyondFree = false
     var compact = false
 
+    @Environment(\.demoFills) private var fills
+
     var body: some View {
         VStack(spacing: 8) {
             ForEach(0..<rows, id: \.self) { row in
@@ -136,7 +142,8 @@ struct DemoGrid: View {
                 }
             }
         }
-        .frame(height: CGFloat(rows) * (compact ? 56 : 68) + CGFloat(rows - 1) * 8)
+        .frame(height: fills ? nil : CGFloat(rows) * (compact ? 56 : 68) + CGFloat(rows - 1) * 8)
+        .frame(maxHeight: fills ? .infinity : nil)
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: rows)
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: columns)
     }
@@ -145,6 +152,7 @@ struct DemoGrid: View {
 /// Page one: the toolbar address follows the tapped cell.
 struct SelectDemo: View {
     var compact = false
+    @Environment(\.demoFills) private var fills
     @State private var selected = 0
 
     var body: some View {
@@ -153,12 +161,14 @@ struct SelectDemo: View {
             DemoGrid(rows: 2, columns: 2, selected: $selected, compact: compact)
         }
         .onboardingCard(padding: 12)
+        .frame(maxHeight: fills ? .infinity : nil)
     }
 }
 
 /// Page two: add and remove rows and columns; cells beyond the free grid show the Syrup drop.
 struct ShapeDemo: View {
     var compact = false
+    @Environment(\.demoFills) private var fills
     @State private var rows = 2
     @State private var columns = 2
     @State private var selected = 0
@@ -179,6 +189,7 @@ struct ShapeDemo: View {
                 .frame(maxWidth: .infinity)
         }
         .onboardingCard(padding: 12)
+        .frame(maxHeight: fills ? .infinity : nil)
     }
 
     private func stepper(_ title: LocalizedStringKey, value: Binding<Int>) -> some View {
@@ -212,6 +223,7 @@ struct LibraryDemo: View {
     private enum Tab: Hashable { case bookmarks, presets }
     @State private var tab = Tab.bookmarks
     @State private var opened: String?
+    @Environment(\.demoFills) private var fills
 
     var body: some View {
         VStack(spacing: 10) {
@@ -237,22 +249,24 @@ struct LibraryDemo: View {
                     row("Work", "rectangle.split.2x1")
                 }
             }
+            .frame(maxHeight: fills ? .infinity : nil, alignment: .top)
             .background(Color(uiColor: .tertiarySystemFill).opacity(0.5), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .onboardingCard(padding: 12)
+        .frame(maxHeight: fills ? .infinity : nil)
     }
 
     private func row(_ title: String, _ icon: String) -> some View {
         Button { opened = title } label: {
             HStack {
                 Image(systemName: icon).foregroundStyle(Color.waffleSecondary).frame(width: 26)
-                Text(verbatim: title)
+                Text(verbatim: title).font(fills ? .title3 : .body)
                 Spacer()
                 if opened == title {
                     Image(systemName: "checkmark").foregroundStyle(Color.waffleSecondary)
                 }
             }
-            .padding(.horizontal, 12).padding(.vertical, 10)
+            .padding(.horizontal, 12).padding(.vertical, fills ? 22 : 10)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -264,6 +278,7 @@ struct LibraryDemo: View {
 /// Two stacked panes with the bar underneath; tapping a pane selects it.
 struct PanesDemo: View {
     var compact = false
+    @Environment(\.demoFills) private var fills
     @State private var selected = 0
 
     var body: some View {
@@ -271,12 +286,14 @@ struct PanesDemo: View {
             VStack(spacing: 8) {
                 ForEach(0..<2, id: \.self) { index in
                     DemoCell(site: DemoSite.samples[index], isSelected: selected == index, compact: compact) { selected = index }
-                        .frame(height: compact ? 64 : 84)
+                        .frame(height: fills ? nil : (compact ? 64 : 84))
+                        .frame(maxHeight: fills ? .infinity : nil)
                 }
             }
             DemoAddressBar(address: DemoSite.samples[selected].address, showsMenu: true)
         }
         .onboardingCard(padding: 12)
+        .frame(maxHeight: fills ? .infinity : nil)
     }
 }
 
@@ -285,9 +302,11 @@ struct SizeDemo: View {
     var compact = false
     @State private var ratio: CGFloat = 0.5
     @State private var startRatio: CGFloat?
+    @State private var filledHeight: CGFloat = 0
+    @Environment(\.demoFills) private var fills
 
     var body: some View {
-        let total: CGFloat = compact ? 170 : 220
+        let total: CGFloat = fills ? max(170, filledHeight - 24) : (compact ? 170 : 220)
         let gap: CGFloat = 20
         VStack(spacing: 0) {
             DemoCell(site: DemoSite.samples[0], isSelected: false, compact: compact)
@@ -317,6 +336,8 @@ struct SizeDemo: View {
         }
         .frame(height: total)
         .onboardingCard(padding: 12)
+        .frame(maxHeight: fills ? .infinity : nil)
+        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { filledHeight = $0 }
     }
 }
 
@@ -324,13 +345,15 @@ struct SizeDemo: View {
 struct LayoutsDemo: View {
     @State private var saved: [String] = []
     @State private var tappedSecond = false
+    @Environment(\.demoFills) private var fills
 
     var body: some View {
         VStack(spacing: 12) {
             HStack(spacing: 8) {
                 ForEach(0..<2, id: \.self) { index in
                     DemoCell(site: DemoSite.samples[index], isSelected: false)
-                        .frame(height: 52)
+                        .frame(height: fills ? nil : 52)
+                        .frame(maxHeight: fills ? .infinity : nil)
                         .allowsHitTesting(false)
                 }
             }
@@ -370,6 +393,7 @@ struct LayoutsDemo: View {
         .animation(.spring(response: 0.4, dampingFraction: 0.85), value: saved)
         .animation(.easeInOut(duration: 0.2), value: tappedSecond)
         .onboardingCard(padding: 12)
+        .frame(maxHeight: fills ? .infinity : nil)
     }
 }
 
@@ -380,6 +404,7 @@ struct UnfoldDemo: View {
     private enum Pose: Hashable { case unfolded, desk, closed }
     @State private var pose = Pose.unfolded
     @State private var selected = 0
+    @Environment(\.demoFills) private var fills
 
     var body: some View {
         VStack(spacing: 12) {
@@ -406,17 +431,19 @@ struct UnfoldDemo: View {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
                             .fill(Color(uiColor: .tertiarySystemFill))
                             .overlay { DemoAddressBar(address: DemoSite.samples[selected].address, showsMenu: true).padding(8) }
-                            .frame(height: 70)
+                            .frame(height: fills ? 110 : 70)
                     }
                 case .closed:
                     VStack(spacing: 8) { pane(0); pane(1) }
                         .frame(maxWidth: 150)
                 }
             }
-            .frame(height: 170)
+            .frame(height: fills ? nil : 170)
+            .frame(maxHeight: fills ? .infinity : nil)
             .frame(maxWidth: .infinity)
         }
         .onboardingCard(padding: 12)
+        .frame(maxHeight: fills ? .infinity : nil)
     }
 
     private func paneColumn(_ a: Int, _ b: Int) -> some View {

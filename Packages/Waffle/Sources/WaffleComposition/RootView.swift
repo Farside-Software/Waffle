@@ -18,6 +18,7 @@ public struct RootView: View {
     /// same GridModel, and a WebPage crashes WebKit when hosted by two
     /// WebViews — so exactly one main scene may claim the grid at a time.
     @State private var isPrimaryWindow = false
+    @Environment(\.scenePhase) private var scenePhase
 
     /// iPhone and iPhone Duo get the pane workspace. Debug builds can force it on an iPad
     /// simulator (`-WaffleForcePhoneUI YES`) as a stand-in for the Duo's inner display.
@@ -89,6 +90,13 @@ public struct RootView: View {
             #endif
         }
         .onDisappear { releasePrimary() }
+        #if DEBUG
+        // Screenshot scripts on a shared simulator check this file to be sure Waffle was in front.
+        .onChange(of: scenePhase, initial: true) { _, phase in
+            let file = URL.documentsDirectory.appending(path: "scene-phase.txt")
+            try? "\(phase == .active ? "active" : "inactive")".write(to: file, atomically: true, encoding: .utf8)
+        }
+        #endif
         .onChange(of: session.mainWindowCount) { _, newCount in
             // Promote this window when the primary one closes.
             if newCount == 0 {
