@@ -107,25 +107,30 @@ struct WaffleCellContainer: View {
     private var isEmpty: Bool { waffleCell.address.isEmpty }
 
     var body: some View {
-        Group {
-            if isEmpty {
-                EmptyCellView(isPane: isPhonePane, isOnlyPane: paneCount == 1, onAddPane: onAddPane)
-            } else {
-                WebView(waffleCell.page)
-                    .webViewBackForwardNavigationGestures(.enabled)
-                    .webViewMagnificationGestures(.enabled)
-                    .webViewLinkPreviews(.enabled)
-                    .onAppear {
-                        waffleCell.loadURL(urlString: waffleCell.address)
-                    }
-                    .onChange(of: waffleCell.page.url) {
-                        // A failed load leaves no URL: keep the address so the failure state can retry it.
-                        if waffleCell.page.url == nil { return }
-                        waffleCell.address = waffleCell.page.url?.absoluteString ?? ""
-                        model.noteAddressChange(for: waffleCell)
-                    }
+        // One WebView per page for the cell's whole life: the empty card is drawn over it, never
+        // swapped for it. Re-creating the host when the address toggles between empty and set
+        // could build a second WebView for a page whose first was still tearing down, which traps
+        // inside WebKit's SwiftUI layer.
+        WebView(waffleCell.page)
+            .webViewBackForwardNavigationGestures(.enabled)
+            .webViewMagnificationGestures(.enabled)
+            .webViewLinkPreviews(.enabled)
+            .onAppear {
+                if !waffleCell.address.isEmpty { waffleCell.loadURL(urlString: waffleCell.address) }
             }
-        }
+            .onChange(of: waffleCell.page.url) {
+                // A failed load leaves no URL: keep the address so the failure state can retry it.
+                if waffleCell.page.url == nil { return }
+                waffleCell.address = waffleCell.page.url?.absoluteString ?? ""
+                model.noteAddressChange(for: waffleCell)
+            }
+            .opacity(isEmpty ? 0 : 1)
+            .allowsHitTesting(!isEmpty)
+            .overlay {
+                if isEmpty {
+                    EmptyCellView(isPane: isPhonePane, isOnlyPane: paneCount == 1, onAddPane: onAddPane)
+                }
+            }
         .overlay {
             if waffleCell.loadError != nil, !isEmpty, !waffleCell.isLoading {
                 LoadFailureView(retry: { waffleCell.reloadCell() })
