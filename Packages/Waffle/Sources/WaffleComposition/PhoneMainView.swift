@@ -160,15 +160,12 @@ public struct PhoneMainView: View {
                     }
                 }
 
-                if showLayoutsSheet, let panel = sidePanelRect(layout: layout) {
-                    layoutsSheet
-                        .frame(width: panel.width, height: panel.height)
-                        .clipShape(.rect(cornerRadius: 24))
-                        .glassEffect(.regular, in: .rect(cornerRadius: 24))
-                        .shadow(color: .black.opacity(0.18), radius: 12, y: 4)
-                        .offset(x: panel.minX - origin.x, y: panel.minY - origin.y)
-                        .transition(.move(edge: .trailing).combined(with: .opacity))
-                        .zIndex(2)
+                if let panel = sidePanelRect(layout: layout) {
+                    if session.presentSyrupSheet {
+                        sidePanel(panel, origin: origin) { syrupSheet }
+                    } else if showLayoutsSheet {
+                        sidePanel(panel, origin: origin) { layoutsSheet }
+                    }
                 }
 
                 if let deck = layout.deck {
@@ -193,6 +190,7 @@ public struct PhoneMainView: View {
         .observingHinge($hinge)
         .animation(.snappy, value: isEditingAddress)
         .animation(.snappy, value: showLayoutsSheet)
+        .animation(.snappy, value: session.presentSyrupSheet)
         .onAppear {
             grid.contentBlocking.start()
             if !grid.restoreFromSnapshotIfAvailable() {
@@ -246,17 +244,10 @@ public struct PhoneMainView: View {
             }
             grid.setAppActive(newPhase == .active)
         }
-        .sheet(isPresented: $session.presentSyrupSheet) {
-            SyrupView(
-                store: session.store,
-                phonePitch: SyrupPitch(
-                    trigger: session.syrupTrigger,
-                    device: mode == .inner ? .iPhoneDuoInner : (Self.isFoldableDevice ? .iPhoneDuoOuter : .iPhone)
-                ),
-                onPurchased: { self.session.presentSyrupSheet = false },
-                onClose: { self.session.presentSyrupSheet = false }
-            )
-        }
+        .sheet(isPresented: Binding(
+            get: { session.presentSyrupSheet && !usesSidePanel },
+            set: { session.presentSyrupSheet = $0 }
+        )) { syrupSheet }
         .sheet(isPresented: $showSettingsSheet) {
             SettingsView(
                 model: session.makeSettingsModel(),
@@ -307,32 +298,67 @@ public struct PhoneMainView: View {
 
     // MARK: - Unfolded Duo geometry
 
-    /// The unfolded Duo's inner display: panes sit side by side around a vertical fold.
-    private var usesSidePanel: Bool { mode == .inner && !inDeskMode }
-
-    /// The two halves of the control bar either side of a vertical fold (screen coordinates).
-    private func splitBarRects(layout: PhoneScreenLayout, bar: CGRect) -> (leading: CGRect, trailing: CGRect)? {
-        guard mode == .inner, layout.primaryIsHorizontal, let fold = layout.fold else { return nil }
-        let foldX = fold.position + layout.workspace.minX
-        let gap = max(fold.thickness, PaneFrameCalculator.defaultSpacing) / 2 + PhoneScreenLayout.margin
-        let left = layout.workspace.minX, right = layout.workspace.maxX
-        guard foldX - gap - left > 120, right - foldX - gap > 120 else { return nil }
-        return (
-            CGRect(x: left, y: bar.minY, width: foldX - gap - left, height: bar.height),
-            CGRect(x: foldX + gap, y: bar.minY, width: right - foldX - gap, height: bar.height)
+    private var syrupSheet: some View {
+        SyrupView(
+            store: session.store,
+            phonePitch: SyrupPitch(
+                trigger: session.syrupTrigger,
+                device: mode == .inner ? .iPhoneDuoInner : (Self.isFoldableDevice ? .iPhoneDuoOuter : .iPhone)
+            ),
+            onPurchased: { self.session.presentSyrupSheet = false },
+            onClose: { self.session.presentSyrupSheet = false }
         )
     }
 
-    /// Layouts & Bookmarks on the unfolded Duo: a panel over the half of the display away
-    /// from the controls' left column, never across the hinge.
+    private func sidePanel<Content: View>(_ panel: CGRect, origin: CGPoint, @ViewBuilder content: () -> Content) -> some View {
+        content()
+            .frame(width: panel.width, height: panel.height)
+            .background(Color(.systemBackground))
+            .clipShape(.rect(cornerRadius: 14))
+            .shadow(color: .black.opacity(0.18), radius: 12, y: 4)
+            .offset(x: panel.minX - origin.x, y: panel.minY - origin.y)
+            .transition(.move(edge: .trailing).combined(with: .opacity))
+            .zIndex(2)
+    }
+
+    /// The unfolded Duo's inner display: panes sit side by side around a vertical fold.
+    private var usesSidePanel: Bool { mode == .inner && !inDeskMode }
+
+    /// Where group A ends and group B begins on the unfolded Duo (screen coordinates), taken
+    /// from the same frames the panes use, so bars and panels line up with the pane edges
+    /// whether the fold is flat or partly open.
+    private func seam(layout: PhoneScreenLayout) -> (aEnd: CGFloat, bStart: CGFloat)? {
+        guard mode == .inner, layout.primaryIsHorizontal else { return nil }
+        let frames = PaneFrameCalculator.frames(
+            count: max(grid.paneCount, 2),
+            ratios: grid.paneRatios,
+            size: layout.workspace.size,
+            primaryIsHorizontal: true,
+            fold: layout.fold
+        )
+        let slots = PaneFrameCalculator.slots(count: max(grid.paneCount, 2), primaryIsHorizontal: true)
+        guard let a = slots.a.first, let b = slots.b.first, a < frames.panes.count, b < frames.panes.count else { return nil }
+        return (frames.panes[a].maxX + layout.workspace.minX, frames.panes[b].minX + layout.workspace.minX)
+    }
+
+    /// The two halves of the control bar either side of the seam (screen coordinates).
+    private func splitBarRects(layout: PhoneScreenLayout, bar: CGRect) -> (leading: CGRect, trailing: CGRect)? {
+        guard let seam = seam(layout: layout) else { return nil }
+        let left = layout.workspace.minX, right = layout.workspace.maxX
+        guard seam.aEnd - left > 120, right - seam.bStart > 120 else { return nil }
+        return (
+            CGRect(x: left, y: bar.minY, width: seam.aEnd - left, height: bar.height),
+            CGRect(x: seam.bStart, y: bar.minY, width: right - seam.bStart, height: bar.height)
+        )
+    }
+
+    /// Layouts & Bookmarks and the Syrup sheet on the unfolded Duo: a panel over group B's
+    /// side (leading edge on the pane edge, never across the hinge).
     private func sidePanelRect(layout: PhoneScreenLayout) -> CGRect? {
-        guard usesSidePanel, layout.primaryIsHorizontal, let fold = layout.fold else { return nil }
-        let foldX = fold.position + layout.workspace.minX
-        let gap = max(fold.thickness, PaneFrameCalculator.defaultSpacing) / 2 + PhoneScreenLayout.margin
-        let x = foldX + gap
+        guard usesSidePanel, let seam = seam(layout: layout) else { return nil }
         let top = layout.workspace.minY
         let bottom = layout.workspace.maxY + PhoneScreenLayout.margin + barHeight
-        return CGRect(x: x, y: top, width: layout.workspace.maxX - x, height: bottom - top)
+        return CGRect(x: seam.bStart, y: top, width: layout.workspace.maxX - seam.bStart, height: bottom - top)
     }
 
     private func selectedPaneIsOnFarSide(primaryIsHorizontal: Bool) -> Bool {
