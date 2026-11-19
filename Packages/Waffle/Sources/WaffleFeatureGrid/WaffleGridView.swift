@@ -89,8 +89,18 @@ struct WaffleCellContainer: View {
     /// offers "Add a second pane" while only one is open).
     var paneCount = 0
     var onAddPane: (() -> Void)? = nil
+    /// Per-corner radii for a phone pane whose outer corners follow the display's corners.
+    /// nil keeps every corner at `cornerRadius`.
+    var cornerRadii: RectangleCornerRadii? = nil
 
     @State private var isHovered = false
+
+    private var cellShape: UnevenRoundedRectangle {
+        UnevenRoundedRectangle(cornerRadii: cornerRadii ?? RectangleCornerRadii(
+            topLeading: cornerRadius, bottomLeading: cornerRadius,
+            bottomTrailing: cornerRadius, topTrailing: cornerRadius
+        ))
+    }
 
     private var isPoppedOut: Bool { model.isPoppedOut(waffleCell) }
     private var isSelected: Bool { model.selectedCell == waffleCell }
@@ -121,13 +131,13 @@ struct WaffleCellContainer: View {
                 LoadFailureView(retry: { waffleCell.reloadCell() })
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .clipShape(cellShape)
         .overlay {
             if isPoppedOut {
                 PoppedOutPlaceholder(cornerRadius: cornerRadius, requestPopBack: requestPopBack)
             } else if isSelected {
                 // Soft glow selection instead of harsh border
-                RoundedRectangle(cornerRadius: cornerRadius)
+                cellShape
                     .stroke(Color.accentColor, lineWidth: 3)
                     .shadow(color: Color.accentColor.opacity(0.5), radius: 8)
                     .padding(1)
@@ -181,7 +191,7 @@ struct WaffleCellContainer: View {
             // Applied after the selection overlay so it draws on top of the
             // accent selection stroke instead of hiding beneath it.
             if waffleCell.isLoading && !isEmpty {
-                RoundedRectangle(cornerRadius: cornerRadius)
+                cellShape
                     .trim(from: 0, to: waffleCell.loadingProgress)
                     .stroke(
                         Color.waffleTertiary,

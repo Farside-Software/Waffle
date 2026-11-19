@@ -23,6 +23,10 @@ public struct PaneWorkspaceView: View {
     /// When set, this pane fills the workspace and the others are tucked away (not unloaded).
     let focusedPaneID: UUID?
     var cornerRadius: CGFloat = 14
+    /// When set, panes whose leading corners sit on the workspace's leading edge (which is the
+    /// display's edge) use these radii for those corners, so the pane follows the display's
+    /// rounded corner instead of being clipped by it: (top, bottom).
+    var leadingDisplayCorners: (top: CGFloat, bottom: CGFloat)?
     /// Starts another pane (the empty-pane card offers it while only one is open).
     var onAddPane: (() -> Void)?
 
@@ -34,8 +38,10 @@ public struct PaneWorkspaceView: View {
         fold: FoldGutter?,
         focusedPaneID: UUID? = nil,
         cornerRadius: CGFloat = 14,
+        leadingDisplayCorners: (top: CGFloat, bottom: CGFloat)? = nil,
         onAddPane: (() -> Void)? = nil
     ) {
+        self.leadingDisplayCorners = leadingDisplayCorners
         self.model = model
         self.primaryIsHorizontal = primaryIsHorizontal
         self.fold = fold
@@ -69,7 +75,8 @@ public struct PaneWorkspaceView: View {
                         requestPopBack: {},
                         isPhonePane: true,
                         paneCount: panes.count,
-                        onAddPane: onAddPane
+                        onAddPane: onAddPane,
+                        cornerRadii: radii(for: frame, in: full)
                     )
                     .frame(width: max(frame.width, 1), height: max(frame.height, 1))
                     .offset(x: frame.minX, y: frame.minY)
@@ -102,6 +109,18 @@ public struct PaneWorkspaceView: View {
             .animation(isDragging ? nil : .snappy(duration: 0.28), value: frames)
             .animation(.snappy(duration: 0.28), value: focusedPaneID)
         }
+    }
+
+    /// Corner radii for a pane at `frame`: leading corners on the display's edge get the
+    /// display radius.
+    private func radii(for frame: CGRect, in full: CGRect) -> RectangleCornerRadii? {
+        guard let corners = leadingDisplayCorners, frame.minX <= full.minX + 0.5 else { return nil }
+        let r = cornerRadius
+        return RectangleCornerRadii(
+            topLeading: frame.minY <= full.minY + 0.5 ? max(corners.top, r) : r,
+            bottomLeading: frame.maxY >= full.maxY - 0.5 ? max(corners.bottom, r) : r,
+            bottomTrailing: r, topTrailing: r
+        )
     }
 
     // MARK: - Divider editing

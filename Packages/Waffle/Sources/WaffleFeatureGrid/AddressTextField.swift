@@ -21,6 +21,8 @@ struct AddressTextField: UIViewRepresentable {
     /// Bumping this ends editing (resigns the keyboard) without submitting. Used when the
     /// pane being edited stops being the selected one, and by a Cancel button.
     var resignToken: Int = 0
+    /// Takes focus (keyboard up, text selected) as soon as the field appears.
+    var focusOnAppear = false
 
     /// Body text that stops growing at a size that still fits the 44-point bar.
     static var font: UIFont {
@@ -48,6 +50,9 @@ struct AddressTextField: UIViewRepresentable {
         // Let the SwiftUI frame decide the width; never grow to fit content.
         field.setContentHuggingPriority(.defaultLow, for: .horizontal)
         field.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        if focusOnAppear {
+            DispatchQueue.main.async { field.becomeFirstResponder() }
+        }
         return field
     }
 

@@ -25,6 +25,8 @@ nonisolated public struct PhoneScreenLayout: Equatable, Sendable {
     public static let barHeight: CGFloat = 56
     public static let margin: CGFloat = 6
     public static let maxBarWidth: CGFloat = 520
+    /// The trailing control column's least width (the Duo's system strip is about this wide).
+    public static let toolbarStripWidth: CGFloat = 76
 
     /// - Parameters:
     ///   - size: the full screen, including safe areas.
@@ -41,12 +43,16 @@ nonisolated public struct PhoneScreenLayout: Equatable, Sendable {
         deskMode: Bool,
         barOnFarSide: Bool = false,
         barHeight: CGFloat = barHeight,
-        margin: CGFloat = margin
+        margin: CGFloat = margin,
+        trailingToolbar: Bool = false
     ) -> PhoneScreenLayout {
-        let left = safe.leading + margin
-        let right = size.width - safe.trailing - margin
-        let top = safe.top + margin
-        let bottom = size.height - safe.bottom - margin
+        // Duo with the controls in the trailing toolbar: panes run to the leading, top and
+        // bottom edges of the safe area (the home indicator stays clear); a margin remains
+        // only before the toolbar strip. No bar.
+        let left = trailingToolbar ? safe.leading : safe.leading + margin
+        let right = size.width - (trailingToolbar ? max(safe.trailing, toolbarStripWidth) : safe.trailing) - margin
+        let top = trailingToolbar ? safe.top : safe.top + margin
+        let bottom = trailingToolbar ? size.height - safe.bottom : size.height - safe.bottom - margin
         let fullWidth = max(right - left, 0)
 
         // Desk mode: the fold must be horizontal so there is an upright half above it.
@@ -62,7 +68,7 @@ nonisolated public struct PhoneScreenLayout: Equatable, Sendable {
         }
 
         let barTop = bottom - barHeight
-        let workspaceBottom = barTop - margin
+        let workspaceBottom = trailingToolbar ? bottom : barTop - margin
         var workspace = CGRect(x: left, y: top, width: fullWidth, height: max(workspaceBottom - top, 0))
 
         var barX = left
@@ -100,7 +106,7 @@ nonisolated public struct PhoneScreenLayout: Equatable, Sendable {
         }
 
         workspace.size.width = max(workspace.width, 0)
-        let bar = CGRect(x: barX, y: barTop, width: max(barWidth, 0), height: barHeight)
+        let bar: CGRect? = trailingToolbar ? nil : CGRect(x: barX, y: barTop, width: max(barWidth, 0), height: barHeight)
         return PhoneScreenLayout(workspace: workspace, bar: bar, deck: nil, fold: localFold, primaryIsHorizontal: primaryIsHorizontal)
     }
 }

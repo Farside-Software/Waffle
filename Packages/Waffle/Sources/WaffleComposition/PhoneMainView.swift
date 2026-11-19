@@ -54,6 +54,10 @@ public struct PhoneMainView: View {
     /// Bumped to end address editing without submitting (Cancel, or another pane was selected).
     @State private var dismissEditingToken = 0
     @State private var hinge: HingeSummary = .unknown
+    /// iPhone Duo: the address editor card is open (the controls live in the trailing toolbar).
+    @State private var showAddressCard = false
+    @State private var addressCardText = ""
+    @State private var addressCardPaneID: UUID?
 
     public init(session: SessionController) {
         self.session = session
@@ -117,14 +121,18 @@ public struct PhoneMainView: View {
                 && reading?.gutter.primaryIsHorizontal == false
                 && (effectiveHinge == .partiallyOpen || effectiveHinge == .unknown)
             let isDesk = laptopPose && session.canUseDeskMode
+            // Duo, except the half-folded laptop pose (which keeps its deck, or its bar): the
+            // controls are a column in the trailing strip and the panes run to the edges.
+            let toolbar = Self.isFoldableDevice && !laptopPose
             let layout = PhoneScreenLayout.compute(
                 size: screenSize,
-                safe: (inset.top, inset.leading, mode == .inner && !isEditingAddress ? max(inset.bottom - Self.innerBottomGive, 0) : inset.bottom, inset.trailing),
+                safe: (inset.top, inset.leading, !toolbar && mode == .inner && !isEditingAddress ? max(inset.bottom - Self.innerBottomGive, 0) : inset.bottom, inset.trailing),
                 fold: reading?.gutter,
                 mode: mode,
                 deskMode: isDesk,
                 barOnFarSide: selectedPaneIsOnFarSide(primaryIsHorizontal: reading?.gutter.primaryIsHorizontal ?? (screenSize.width >= screenSize.height)),
-                barHeight: barHeight
+                barHeight: barHeight,
+                trailingToolbar: toolbar
             )
 
             ZStack(alignment: .topLeading) {
@@ -133,6 +141,7 @@ public struct PhoneMainView: View {
                     primaryIsHorizontal: layout.primaryIsHorizontal,
                     fold: layout.fold,
                     focusedPaneID: focusedPaneID,
+                    leadingDisplayCorners: toolbar ? (Self.displayCornerTop, Self.displayCornerBottom) : nil,
                     onAddPane: { session.addPane(mode: mode, isFoldable: Self.isFoldableDevice) }
                 )
                 .environment(\.duoPanelDense, mode == .inner)
@@ -145,6 +154,31 @@ public struct PhoneMainView: View {
                         inDeskMode = now
                         isMaximized = PaneFocus.reconciledMaximized(isMaximized, count: grid.paneCount, isDeskMode: now)
                     }
+
+                if toolbar {
+                    let stripWidth = max(inset.trailing, PhoneScreenLayout.toolbarStripWidth)
+                    let strip = CGRect(x: screenSize.width - stripWidth, y: 0, width: stripWidth, height: screenSize.height)
+                    trailingToolbar(stripWidth: stripWidth, bottomInset: inset.bottom)
+                        .frame(width: strip.width, height: strip.height)
+                        .offset(x: strip.minX - origin.x, y: strip.minY - origin.y)
+                        .zIndex(3)
+                    if showsUnfoldHint {
+                        Text("Unfold your iPhone Duo to see all \(grid.paneCount) panes")
+                            .font(.caption)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                            .padding(.horizontal, 12)
+                            .frame(height: Self.hintHeight + 8)
+                            .glassEffect(.regular, in: .capsule)
+                            .dynamicTypeSize(...Self.controlTypeLimit)
+                            .allowsHitTesting(false)
+                            .frame(width: layout.workspace.width, height: layout.workspace.height - 8, alignment: .bottom)
+                            .offset(x: layout.workspace.minX - origin.x, y: layout.workspace.minY - origin.y)
+                    }
+                    if showAddressCard {
+                        addressCardOverlay(layout: layout, origin: origin)
+                    }
+                }
 
                 if let bar = layout.bar {
                     if let halves = splitBarRects(layout: layout, bar: bar) {
@@ -189,9 +223,12 @@ public struct PhoneMainView: View {
                 }
             }
         }
+        // Duo: the keyboard never reflows the panes; the address card sits above it by design.
+        .ignoresSafeArea(.keyboard, edges: Self.isFoldableDevice && !inLaptopPose ? .bottom : [])
         .background(Color.wafflePrimary.opacity(0.3).ignoresSafeArea())
         .observingHinge($hinge)
         .animation(.snappy, value: isEditingAddress)
+        .animation(.snappy, value: showAddressCard)
         .animation(.snappy, value: showLayoutsSheet)
         .animation(.snappy, value: session.presentSyrupSheet)
         .onAppear {
@@ -233,6 +270,12 @@ public struct PhoneMainView: View {
                     session.savePaneLayout()
                 }
             }
+            if defaults.string(forKey: "WaffleDebugAction") == "addressCard" {
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(2500))
+                    openAddressCard()
+                }
+            }
             if defaults.string(forKey: "WaffleDebugAction") == "addPane" {
                 Task { @MainActor in
                     try? await Task.sleep(for: .milliseconds(1500))
@@ -244,6 +287,7 @@ public struct PhoneMainView: View {
         .onChange(of: grid.selectedCell) { _, _ in
             // Selecting another pane ends editing: the field shows that pane's address again.
             if isEditingAddress { dismissEditingToken += 1 }
+            showAddressCard = false
         }
         .onChange(of: grid.paneTouchCount) { _, _ in
             if isEditingAddress { dismissEditingToken += 1 }
@@ -416,13 +460,126 @@ public struct PhoneMainView: View {
     private func sidePanelRect(layout: PhoneScreenLayout) -> CGRect? {
         guard usesSidePanel, let seam = seam(layout: layout) else { return nil }
         let top = layout.workspace.minY
-        let bottom = layout.workspace.maxY + PhoneScreenLayout.margin + barHeight
+        // With the controls in the trailing toolbar the panel is exactly its half's height.
+        let bottom = layout.bar == nil ? layout.workspace.maxY : layout.workspace.maxY + PhoneScreenLayout.margin + barHeight
         return CGRect(x: seam.bStart, y: top, width: layout.workspace.maxX - seam.bStart, height: bottom - top)
     }
 
     private func selectedPaneIsOnFarSide(primaryIsHorizontal: Bool) -> Bool {
         guard let index = grid.selectedPaneIndex else { return false }
         return PaneFrameCalculator.slots(count: grid.paneCount, primaryIsHorizontal: primaryIsHorizontal).b.contains(index)
+    }
+
+// MARK: - Trailing toolbar (iPhone Duo)
+
+    /// The Duo's controls: a column of circular glass buttons in the strip under the clock,
+    /// anchored to the bottom (the thumb). Back, the address button, the pane switcher (only
+    /// while one pane of three or four shows), maximize, reload and •••. The pane switcher and
+    /// Add Pane stay reachable: the switcher button here, Add Pane and Go to Pane in •••.
+    private func trailingToolbar(stripWidth: CGFloat, bottomInset: CGFloat) -> some View {
+        let showsMaximize = PaneFocus.offersMaximize(count: grid.paneCount, mode: mode, isDeskMode: inDeskMode)
+        return VStack(spacing: 10) {
+            circleButton("Back", systemImage: "chevron.backward") { grid.selectedCell?.goBack() }
+                .opacity(grid.selectedCell?.canGoBack == true ? 1 : 0.45)
+            verticalAddressBar
+            if showsSwitcher { paneSwitcher }
+            if showsMaximize {
+                circleButton(
+                    focusedPaneID == nil ? "Maximize Pane" : "Show All Panes",
+                    systemImage: focusedPaneID == nil
+                        ? "arrow.up.left.and.arrow.down.right"
+                        : "arrow.down.right.and.arrow.up.left"
+                ) { toggleMaximize() }
+            }
+            reloadButton
+            menuButton
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.top, Self.toolbarTopClearance)
+        .padding(.bottom, max(bottomInset, 12))
+    }
+
+    /// The address bar turned 90 degrees: a tall glass capsule, as wide as the round buttons and
+    /// as tall as the strip allows, showing the page's host reading bottom to top (like a book
+    /// spine, middle truncated) with a globe at its end. Tap opens the address card.
+    private var verticalAddressBar: some View {
+        let address = grid.selectedCell?.address ?? ""
+        let host = address.isEmpty ? "" : bareHost(address)
+        let width = AppConfiguration.barControlHeight
+        return Button { openAddressCard() } label: {
+            VStack(spacing: 6) {
+                Image(systemName: address.isEmpty ? "magnifyingglass" : "globe")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 12)
+                GeometryReader { g in
+                    Text(host.isEmpty ? String(localized: "Search or enter a URL") : host)
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(host.isEmpty ? .secondary : .primary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+                        .frame(width: max(g.size.height, 1), height: g.size.width)
+                        .rotationEffect(.degrees(-90))
+                        .position(x: g.size.width / 2, y: g.size.height / 2)
+                }
+                .padding(.bottom, 8)
+            }
+            .frame(width: width)
+            .frame(maxHeight: .infinity)
+            .contentShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .frame(minHeight: 96)
+        .glassEffect(.regular.interactive(), in: .capsule)
+        .accessibilityLabel(Text(address.isEmpty ? "Address bar" : LocalizedStringKey(address)))
+        .accessibilityHint(Text("Edit the address"))
+    }
+
+    private func bareHost(_ address: String) -> String {
+        let host = URLDisplayFormatter.phoneDisplay(address)
+        return host.firstIndex(of: "/").map { String(host[..<$0]) } ?? host
+    }
+
+    private func openAddressCard() {
+        addressCardPaneID = grid.selectedCell?.id
+        addressCardText = grid.selectedCell?.address ?? ""
+        showAddressCard = true
+    }
+
+    private func closeAddressCard() { showAddressCard = false }
+
+    private func submitAddressCard() {
+        grid.addressText = addressCardText
+        grid.submitAddress(using: searchProvider, toPaneID: addressCardPaneID)
+        showAddressCard = false
+    }
+
+    /// The address card sits at the top of the selected pane's half (clear of the hinge and
+    /// of the keyboard, which rises from the bottom); a tap outside closes it.
+    private func addressCardOverlay(layout: PhoneScreenLayout, origin: CGPoint) -> some View {
+        let half = selectedPaneHalf(layout: layout)
+        let width = min(max(half.width - 24, 200), 440)
+        return ZStack(alignment: .topLeading) {
+            Color.black.opacity(0.18)
+                .ignoresSafeArea()
+                .contentShape(Rectangle())
+                .onTapGesture { closeAddressCard() }
+            AddressEditCard(text: $addressCardText, onSubmit: submitAddressCard, onCancel: closeAddressCard)
+                .frame(width: width)
+                .offset(x: half.minX + (half.width - width) / 2 - origin.x, y: half.minY + 12 - origin.y)
+        }
+        .transition(.opacity.combined(with: .scale(scale: 0.96, anchor: .top)))
+        .zIndex(4)
+    }
+
+    /// The side of the hinge the selected pane is on (screen coordinates), or the whole
+    /// workspace on a single display.
+    private func selectedPaneHalf(layout: PhoneScreenLayout) -> CGRect {
+        guard let seam = seam(layout: layout), grid.paneCount > 1 else { return layout.workspace }
+        let onFarSide = selectedPaneIsOnFarSide(primaryIsHorizontal: true)
+        return onFarSide
+            ? CGRect(x: seam.bStart, y: layout.workspace.minY, width: layout.workspace.maxX - seam.bStart, height: layout.workspace.height)
+            : CGRect(x: layout.workspace.minX, y: layout.workspace.minY, width: seam.aEnd - layout.workspace.minX, height: layout.workspace.height)
     }
 
     // MARK: - Control bar
@@ -440,13 +597,20 @@ public struct PhoneMainView: View {
     }
 
     private var barHeight: CGFloat {
-        (mode == .inner ? Self.innerBarHeight : PhoneScreenLayout.barHeight) + (showsUnfoldHint ? Self.hintHeight : 0)
+        if Self.isFoldableDevice && !inLaptopPose { return 0 }
+        return (mode == .inner ? Self.innerBarHeight : PhoneScreenLayout.barHeight) + (showsUnfoldHint ? Self.hintHeight : 0)
     }
     /// The unfolded display is short: a slimmer bar that also uses part of the home-indicator
     /// band, so the panes get the height back.
     static let innerBarHeight: CGFloat = 50
     static let innerBottomGive: CGFloat = 16
     static let hintHeight: CGFloat = 20
+    /// The Duo's display corner radii, which the panes' outer corners follow. The bottom
+    /// corners are smaller because the panes stop above the home-indicator area.
+    static let displayCornerTop: CGFloat = 38
+    static let displayCornerBottom: CGFloat = 26
+    /// The system draws the clock and status at the top of the trailing strip.
+    static let toolbarTopClearance: CGFloat = 112
 
     static var isFoldableDevice: Bool {
         #if DEBUG
