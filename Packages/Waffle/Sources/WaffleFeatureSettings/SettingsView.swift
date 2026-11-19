@@ -80,7 +80,7 @@ public struct SettingsView: View {
                     .minimumScaleFactor(0.6)
             } else {
                 Image(systemName: "cart")
-                    .foregroundStyle(.waffleTertiary)
+                    .foregroundStyle(.secondary)
                 Text("Not Purchased")
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
