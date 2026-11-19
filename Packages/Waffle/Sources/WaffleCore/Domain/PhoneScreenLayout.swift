@@ -44,14 +44,16 @@ nonisolated public struct PhoneScreenLayout: Equatable, Sendable {
         barOnFarSide: Bool = false,
         barHeight: CGFloat = barHeight,
         margin: CGFloat = margin,
-        trailingToolbar: Bool = false
+        trailingToolbar: Bool = false,
+        stripWidth: CGFloat = toolbarStripWidth,
+        ignoreTopSafeArea: Bool = false
     ) -> PhoneScreenLayout {
         // Duo with the controls in the trailing toolbar: panes run to the leading, top and
         // bottom edges of the safe area (the home indicator stays clear); a margin remains
         // only before the toolbar strip. No bar.
         let left = trailingToolbar ? safe.leading : safe.leading + margin
-        let right = size.width - (trailingToolbar ? max(safe.trailing, toolbarStripWidth) : safe.trailing) - margin
-        let top = trailingToolbar ? safe.top : safe.top + margin
+        let right = size.width - (trailingToolbar ? max(safe.trailing, stripWidth) : safe.trailing) - margin
+        let top = trailingToolbar ? (ignoreTopSafeArea ? 0 : safe.top) : safe.top + margin
         let bottom = trailingToolbar ? size.height - safe.bottom : size.height - safe.bottom - margin
         let fullWidth = max(right - left, 0)
 

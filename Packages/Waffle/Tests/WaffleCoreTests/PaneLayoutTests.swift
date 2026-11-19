@@ -292,6 +292,23 @@ struct PhoneScreenLayoutTests {
         #expect(!portrait.primaryIsHorizontal)
     }
 
+    @Test func trailingToolbarRunsPanesToTheLeadingTopAndBottomEdges() {
+        let layout = PhoneScreenLayout.compute(size: CGSize(width: 951, height: 669), safe: (0, 0, 0, 84), fold: nil, mode: .inner, deskMode: false, trailingToolbar: true)
+        #expect(layout.bar == nil)
+        #expect(layout.workspace.minX == 0)
+        #expect(layout.workspace.minY == 0)
+        #expect(layout.workspace.maxY == 669)
+        // A gap remains before the toolbar strip.
+        #expect(layout.workspace.maxX <= 951 - PhoneScreenLayout.toolbarStripWidth)
+    }
+
+    @Test func portraitToolbarIgnoresTheStatusBandAndWidensTheStrip() {
+        let layout = PhoneScreenLayout.compute(size: CGSize(width: 669, height: 951), safe: (80, 0, 35, 84), fold: nil, mode: .inner, deskMode: false, trailingToolbar: true, stripWidth: 136, ignoreTopSafeArea: true)
+        #expect(layout.workspace.minY == 0)
+        #expect(layout.workspace.maxX <= 669 - 136)
+        #expect(!layout.primaryIsHorizontal)
+    }
+
     @Test func deskModePutsPanesAboveTheFoldAndControlsBelow() {
         let fold = FoldGutter(primaryIsHorizontal: false, position: 500, thickness: 16, isActive: true)
         let layout = PhoneScreenLayout.compute(size: CGSize(width: 1000, height: 1000), safe: safe, fold: fold, mode: .inner, deskMode: true)

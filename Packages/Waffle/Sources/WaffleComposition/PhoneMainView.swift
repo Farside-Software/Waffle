@@ -124,6 +124,11 @@ public struct PhoneMainView: View {
             // Duo, except the half-folded laptop pose (which keeps its deck, or its bar): the
             // controls are a column in the trailing strip and the panes run to the edges.
             let toolbar = Self.isFoldableDevice && !laptopPose
+            // Portrait on the unfolded Duo has a status band across the top, but the status items
+            // only occupy the trailing column: the panes run to the top edge and the strip is
+            // wide enough to hold the status above the toolbar.
+            let statusInStrip = toolbar && inset.top >= 40
+            let stripWidth = max(inset.trailing, statusInStrip ? Self.portraitStripWidth : PhoneScreenLayout.toolbarStripWidth)
             let layout = PhoneScreenLayout.compute(
                 size: screenSize,
                 safe: (inset.top, inset.leading, toolbar ? 0 : (mode == .inner && !isEditingAddress ? max(inset.bottom - Self.innerBottomGive, 0) : inset.bottom), inset.trailing),
@@ -132,7 +137,9 @@ public struct PhoneMainView: View {
                 deskMode: isDesk,
                 barOnFarSide: selectedPaneIsOnFarSide(primaryIsHorizontal: reading?.gutter.primaryIsHorizontal ?? (screenSize.width >= screenSize.height)),
                 barHeight: barHeight,
-                trailingToolbar: toolbar
+                trailingToolbar: toolbar,
+                stripWidth: stripWidth,
+                ignoreTopSafeArea: statusInStrip
             )
 
             ZStack(alignment: .topLeading) {
@@ -141,7 +148,7 @@ public struct PhoneMainView: View {
                     primaryIsHorizontal: layout.primaryIsHorizontal,
                     fold: layout.fold,
                     focusedPaneID: focusedPaneID,
-                    leadingDisplayCorners: toolbar ? (inset.top < 8 ? Self.displayCornerTop : 0, Self.displayCornerBottom) : nil,
+                    leadingDisplayCorners: toolbar ? (Self.displayCornerTop, Self.displayCornerBottom) : nil,
                     onAddPane: { session.addPane(mode: mode, isFoldable: Self.isFoldableDevice) }
                 )
                 .environment(\.duoPanelDense, mode == .inner)
@@ -156,9 +163,8 @@ public struct PhoneMainView: View {
                     }
 
                 if toolbar {
-                    let stripWidth = max(inset.trailing, PhoneScreenLayout.toolbarStripWidth)
                     let strip = CGRect(x: screenSize.width - stripWidth, y: 0, width: stripWidth, height: screenSize.height)
-                    trailingToolbar(stripWidth: stripWidth, bottomInset: inset.bottom)
+                    trailingToolbar(topClearance: statusInStrip ? inset.top + 8 : Self.toolbarTopClearance)
                         .frame(width: strip.width, height: strip.height)
                         .offset(x: strip.minX - origin.x, y: strip.minY - origin.y)
                         .zIndex(3)
@@ -486,7 +492,7 @@ public struct PhoneMainView: View {
     /// anchored to the bottom (the thumb). Back, the address button, the pane switcher (only
     /// while one pane of three or four shows), maximize, reload and •••. The pane switcher and
     /// Add Pane stay reachable: the switcher button here, Add Pane and Go to Pane in •••.
-    private func trailingToolbar(stripWidth: CGFloat, bottomInset: CGFloat) -> some View {
+    private func trailingToolbar(topClearance: CGFloat) -> some View {
         let showsMaximize = PaneFocus.offersMaximize(count: grid.paneCount, mode: mode, isDeskMode: inDeskMode)
         return VStack(spacing: 10) {
             circleButton("Back", systemImage: "chevron.backward") { grid.selectedCell?.goBack() }
@@ -505,8 +511,8 @@ public struct PhoneMainView: View {
             menuButton
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.top, Self.toolbarTopClearance)
-        .padding(.bottom, max(bottomInset, 12))
+        .padding(.top, topClearance)
+        .padding(.bottom, 12)
     }
 
     /// The address bar turned 90 degrees: a tall glass capsule, as wide as the round buttons and
@@ -623,6 +629,8 @@ public struct PhoneMainView: View {
     static let displayCornerBottom: CGFloat = 38
     /// The system draws the clock and status at the top of the trailing strip.
     static let toolbarTopClearance: CGFloat = 112
+    /// Portrait: wide enough that the clock and status sit wholly above the toolbar column.
+    static let portraitStripWidth: CGFloat = 136
 
     static var isFoldableDevice: Bool {
         #if DEBUG

@@ -82,8 +82,10 @@ struct OnboardingPageView: View {
                         }
                         textColumn(compact: true, large: false, dense: dense, height: column.size.height)
                         textColumn(compact: true, large: false, dense: dense, height: column.size.height, detail: false)
+                        // A short landscape phone: the symbol tile steps aside too.
+                        textColumn(compact: true, large: false, dense: dense, height: column.size.height, detail: false, tile: false)
                         ScrollView {
-                            textColumn(compact: true, large: false, dense: dense, height: column.size.height, detail: false)
+                            textColumn(compact: true, large: false, dense: dense, height: column.size.height, detail: false, tile: false)
                         }
                         .scrollBounceBehavior(.basedOnSize)
                         .scrollIndicatorsFlash(onAppear: true)
@@ -130,9 +132,9 @@ struct OnboardingPageView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func textColumn(compact: Bool, large: Bool, dense: Bool, height: CGFloat, detail: Bool = true) -> some View {
+    private func textColumn(compact: Bool, large: Bool, dense: Bool, height: CGFloat, detail: Bool = true, tile: Bool = true) -> some View {
         VStack(spacing: large ? 22 : 18) {
-            OnboardingPageHeader(page: page, compact: compact, large: large)
+            OnboardingPageHeader(page: page, compact: compact, large: large, showsTile: tile)
             if !page.features.isEmpty, !(dense && page.kind == .syrup) { featureCard(compact: compact, large: large, detail: detail) }
             footnote
         }
@@ -196,6 +198,7 @@ struct OnboardingPageHeader: View {
     var compact = false
     /// The unfolded Duo: a bigger tile, title and line to fill the half.
     var large = false
+    var showsTile = true
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var bounce = false
@@ -206,6 +209,7 @@ struct OnboardingPageHeader: View {
     var body: some View {
         let side = large ? largeBox : (compact ? compactBox : box)
         VStack(spacing: large ? 18 : (compact ? 8 : 14)) {
+            if showsTile {
             Image(systemName: page.systemImage)
                 .font(.system(size: side * 0.48, weight: .medium))
                 .symbolRenderingMode(.hierarchical)
@@ -215,6 +219,7 @@ struct OnboardingPageHeader: View {
                 .background(Color.waffleSecondary.opacity(0.28), in: RoundedRectangle(cornerRadius: side * 0.26, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: side * 0.26, style: .continuous).strokeBorder(.quaternary))
                 .accessibilityHidden(true)
+            }
 
             VStack(spacing: 6) {
                 Text(page.title)
@@ -262,6 +267,8 @@ struct OnboardingFeatureRow: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(feature.title).font((large ? Font.title3 : Font.body).weight(.semibold))
+                    .lineLimit(showsDetail ? nil : 1)
+                    .minimumScaleFactor(showsDetail ? 1 : 0.7)
                 if showsDetail {
                     Text(feature.detail)
                         .font(large ? .body : .subheadline)
