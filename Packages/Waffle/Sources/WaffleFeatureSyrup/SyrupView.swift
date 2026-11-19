@@ -70,7 +70,7 @@ public struct SyrupView: View {
                     .foregroundStyle(.secondary)
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Label("Up to \(AppConfiguration.maxPremiumRows)x\(AppConfiguration.maxPremiumCols) cells (double the \(AppConfiguration.maxFreeRows)x\(AppConfiguration.maxFreeCols) limit)", systemImage: "square.grid.3x3")
+                    Label("Grids up to \(AppConfiguration.maxPremiumRows)×\(AppConfiguration.maxPremiumCols) (free is \(AppConfiguration.maxFreeRows)×\(AppConfiguration.maxFreeCols))", systemImage: "square.grid.3x3")
                     Label("Rearrange cells", systemImage: "arrow.left.arrow.right.square")
                     Label("Pop out cells into their own windows", systemImage: "rectangle.on.rectangle")
                     Label("Fullscreen a single cell", systemImage: "arrow.up.left.and.arrow.down.right.rectangle")

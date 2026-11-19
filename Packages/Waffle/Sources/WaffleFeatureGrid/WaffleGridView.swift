@@ -116,7 +116,11 @@ struct WaffleCellContainer: View {
             .webViewMagnificationGestures(.enabled)
             .webViewLinkPreviews(.enabled)
             .onAppear {
-                if !waffleCell.address.isEmpty { waffleCell.loadURL(urlString: waffleCell.address) }
+                // A cell built by a preset or restore already started its load; starting it again
+                // here cancels that navigation and can leave the pane blank.
+                if !waffleCell.address.isEmpty, waffleCell.page.url == nil, !waffleCell.page.isLoading, waffleCell.loadError == nil {
+                    waffleCell.loadURL(urlString: waffleCell.address)
+                }
             }
             .onChange(of: waffleCell.page.url) {
                 // A failed load leaves no URL: keep the address so the failure state can retry it.

@@ -391,7 +391,9 @@ public final class GridModel {
                 let flat = GridLayout.index(row: rowIndex, column: columnIndex, columnCount: colCount)
                 cell.refreshInterval = intervals[flat]
                 cell.contentBlockingMode = modes[flat]
-                cell.loadURL(urlString: urlString)
+                // The cell's view starts the load when it appears. Starting it here as well
+                // (before any view hosts the page) left rebuilt grids blank on iPad.
+                cell.address = urlString
                 return cell
             }
         }

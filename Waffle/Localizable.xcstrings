@@ -10603,25 +10603,25 @@
       },
       "shouldGenerateSymbol": false
     },
-    "Up to %lldx%lld cells (double the %lldx%lld limit)": {
+    "Grids up to %lld×%lld (free is %lld×%lld)": {
       "extractionState": "manual",
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Celdas de hasta %lldx%lld (el doble del límite de %lldx%lld)"
+            "value": "Cuadrículas de hasta %lld×%lld (gratis: %lld×%lld)"
           }
         },
         "fr-CA": {
           "stringUnit": {
             "state": "translated",
-            "value": "Des cellules jusqu'à %lldx%lld (le double de la limite de %lldx%lld)"
+            "value": "Grilles jusqu'à %lld×%lld (gratuit : %lld×%lld)"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "最大%lldx%lldのセル（上限%lldx%lldの2倍）"
+            "value": "最大%lld×%lldのグリッド（無料は%lld×%lld）"
           }
         }
       },
