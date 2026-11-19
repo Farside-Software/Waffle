@@ -19,6 +19,7 @@ public struct SyrupView: View {
     /// Set on iPhone and iPhone Duo: lists what Syrup unlocks there instead of the iPad grid features.
     private let phonePitch: SyrupPitch?
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.duoPanelDense) private var dense
 
     public init(store: StoreManager, phonePitch: SyrupPitch? = nil, onPurchased: (() -> Void)? = nil, onClose: (() -> Void)? = nil) {
         self.store = store
@@ -175,18 +176,18 @@ public struct SyrupView: View {
                         // unfolded Duo's side panel the "Always free" card is not cut off.
                         HStack(spacing: 10) {
                             Image(systemName: "drop.fill")
-                                .font(.system(size: 34))
+                                .font(.system(size: dense ? 40 : 34))
                                 // Dark brown vanishes on a dark sheet: the brand gold there.
                                 .foregroundStyle(colorScheme == .dark ? Color.wafflePrimary : Color.waffleTertiary)
                                 .accessibilityHidden(true)
                             Text(verbatim: "Syrup")
-                                .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                                .font(dense ? .system(size: 38, weight: .bold, design: .rounded) : .system(.largeTitle, design: .rounded, weight: .bold))
                         }
 
                         Spacer(minLength: 12)
 
                         Text(Self.lead(for: pitch.trigger))
-                            .font(.headline)
+                            .font(dense ? .title3.weight(.semibold) : .headline)
                             .multilineTextAlignment(.center)
 
                         Spacer(minLength: 12)
@@ -196,7 +197,7 @@ public struct SyrupView: View {
                         Spacer(minLength: 16)
 
                         Text(LocalizedStringKey("Syrup is a one-time purchase. With Family Sharing, your whole family can use it."))
-                            .font(.footnote)
+                            .font(dense ? .subheadline : .footnote)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
 
@@ -247,14 +248,15 @@ public struct SyrupView: View {
     }
 
     private func phoneFeatures(_ pitch: SyrupPitch) -> some View {
-        VStack(spacing: 14) {
-            VStack(alignment: .leading, spacing: 12) {
+        VStack(spacing: dense ? 14 : 14) {
+            VStack(alignment: .leading, spacing: dense ? 14 : 12) {
                 ForEach(pitch.features, id: \.self) { feature in
                     phoneLabel(feature, device: pitch.device)
                         .fontWeight(feature == pitch.leadFeature ? .semibold : .regular)
                 }
             }
-            .labelStyle(AlignedIconLabelStyle(iconSize: 22, iconWidth: 40, iconColor: .secondary))
+            .font(dense ? .body : .body)
+            .labelStyle(AlignedIconLabelStyle(iconSize: dense ? 28 : 22, iconWidth: dense ? 48 : 40, iconColor: .secondary))
             .frame(maxWidth: .infinity, alignment: .leading)
             .waffleCard()
 
@@ -266,15 +268,15 @@ public struct SyrupView: View {
                     Text("Also unlocks Waffle on iPad and iPhone Duo: bigger grids, a third and fourth pane, Desk Mode")
                 }
             }
-            .font(.subheadline)
+            .font(dense ? .subheadline : .subheadline)
             .foregroundStyle(.secondary)
             .multilineTextAlignment(.center)
 
             // The free side, said plainly (and it fills the sheet honestly).
             Label("Always free: two panes, one saved layout, auto-refresh and content blocking", systemImage: "checkmark.circle")
-                .font(.subheadline)
+                .font(dense ? .subheadline : .subheadline)
                 .foregroundStyle(.secondary)
-                .labelStyle(AlignedIconLabelStyle(iconSize: 22, iconWidth: 40, iconColor: .secondary))
+                .labelStyle(AlignedIconLabelStyle(iconSize: dense ? 28 : 22, iconWidth: dense ? 48 : 40, iconColor: .secondary))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .waffleCard()
         }

@@ -128,6 +128,9 @@ public struct SettingsView: View {
                             .toolbar { doneButton }
                     }
                 }
+                // Each column is half of a 951-point display: roomier rows and larger type.
+                .environment(\.defaultMinListRowHeight, 62)
+                .font(.title3)
             } else {
                 NavigationStack(path: $path) {
                     rootList(selection: nil)

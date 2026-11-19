@@ -122,3 +122,18 @@ nonisolated public enum PhoneDuo {
     public static let isDuo = false
 }
 #endif
+
+#if os(iOS)
+import SwiftUI
+
+private struct DuoPanelDenseKey: EnvironmentKey { static let defaultValue = false }
+
+public extension EnvironmentValues {
+    /// Set inside the unfolded Duo's side panels (Layouts & Bookmarks, Syrup): content is
+    /// designed for the half-display, with larger type and rows that fill the panel's height.
+    var duoPanelDense: Bool {
+        get { self[DuoPanelDenseKey.self] }
+        set { self[DuoPanelDenseKey.self] = newValue }
+    }
+}
+#endif

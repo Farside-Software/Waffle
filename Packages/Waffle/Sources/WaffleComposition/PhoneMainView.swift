@@ -119,7 +119,7 @@ public struct PhoneMainView: View {
             let isDesk = laptopPose && session.canUseDeskMode
             let layout = PhoneScreenLayout.compute(
                 size: screenSize,
-                safe: (inset.top, inset.leading, inset.bottom, inset.trailing),
+                safe: (inset.top, inset.leading, mode == .inner ? max(inset.bottom - Self.innerBottomGive, 0) : inset.bottom, inset.trailing),
                 fold: reading?.gutter,
                 mode: mode,
                 deskMode: isDesk,
@@ -135,6 +135,7 @@ public struct PhoneMainView: View {
                     focusedPaneID: focusedPaneID,
                     onAddPane: { session.addPane(mode: mode, isFoldable: Self.isFoldableDevice) }
                 )
+                .environment(\.duoPanelDense, mode == .inner)
                 .frame(width: layout.workspace.width, height: layout.workspace.height)
                 .offset(x: layout.workspace.minX - origin.x, y: layout.workspace.minY - origin.y)
 
@@ -369,6 +370,7 @@ public struct PhoneMainView: View {
 
     private func sidePanel<Content: View>(_ panel: CGRect, origin: CGPoint, @ViewBuilder content: () -> Content) -> some View {
         content()
+            .environment(\.duoPanelDense, true)
             .frame(width: panel.width, height: panel.height)
             .background(Color(.systemBackground))
             .clipShape(.rect(cornerRadius: 14))
@@ -438,8 +440,12 @@ public struct PhoneMainView: View {
     }
 
     private var barHeight: CGFloat {
-        PhoneScreenLayout.barHeight + (showsUnfoldHint ? Self.hintHeight : 0)
+        (mode == .inner ? Self.innerBarHeight : PhoneScreenLayout.barHeight) + (showsUnfoldHint ? Self.hintHeight : 0)
     }
+    /// The unfolded display is short: a slimmer bar that also uses part of the home-indicator
+    /// band, so the panes get the height back.
+    static let innerBarHeight: CGFloat = 50
+    static let innerBottomGive: CGFloat = 16
     static let hintHeight: CGFloat = 20
 
     static var isFoldableDevice: Bool {
@@ -509,7 +515,7 @@ public struct PhoneMainView: View {
                     menuButton
                 }
             }
-            .frame(height: AppConfiguration.barControlHeight + 12)
+            .frame(height: AppConfiguration.barControlHeight + (mode == .inner ? 4 : 12))
         }
         .padding(.horizontal, 6)
     }

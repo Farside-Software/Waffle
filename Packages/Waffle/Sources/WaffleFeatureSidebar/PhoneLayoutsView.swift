@@ -34,6 +34,8 @@ struct PhoneLayoutsView: View {
     var onDeleteBookmark: (Bookmark) -> Void
     var onMoveBookmarks: ((IndexSet, Int) -> Void)?
 
+    @Environment(\.duoPanelDense) private var dense
+
     var body: some View {
         List {
             Section {
@@ -60,8 +62,10 @@ struct PhoneLayoutsView: View {
             Section {
                 if bookmarks.isEmpty {
                     Text(hasAnyBookmarks ? "No bookmarks match your search" : "No bookmarks yet. Use New to save the page you are on.")
-                        .font(.subheadline)
+                        .font(dense ? .body : .subheadline)
                         .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, minHeight: dense ? 80 : nil, alignment: dense ? .center : .leading)
+                        .multilineTextAlignment(dense ? .center : .leading)
                 } else {
                     ForEach(bookmarks) { bookmark in
                         bookmarkRow(bookmark)
@@ -91,7 +95,7 @@ struct PhoneLayoutsView: View {
     ) -> some View {
         let titleLabel = Label {
             Text(title)
-                .font(.title3.bold())
+                .font(dense ? .title2.bold() : .title3.bold())
                 .foregroundStyle(.primary)
         } icon: {
             Image(systemName: icon)
@@ -135,12 +139,12 @@ struct PhoneLayoutsView: View {
             } label: {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(layoutName(preset))
-                        .font(.headline)
+                        .font(dense ? .title3.weight(.semibold) : .headline)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
                     if !sites.isEmpty {
                         Text(verbatim: sites)
-                            .font(.subheadline)
+                            .font(dense ? .body : .subheadline)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                     }
@@ -180,6 +184,7 @@ struct PhoneLayoutsView: View {
             }
             .accessibilityLabel(Text("Layout options"))
         }
+        .padding(.vertical, dense ? 10 : 0)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) { onDeletePreset(preset) } label: {
                 Label("Delete", systemImage: "trash")
@@ -209,19 +214,19 @@ struct PhoneLayoutsView: View {
     }
 
     private var emptyLayouts: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: dense ? 14 : 10) {
             Image(systemName: "rectangle.split.2x1")
-                .font(.system(size: 32, weight: .regular))
+                .font(.system(size: dense ? 52 : 32, weight: .regular))
                 .foregroundStyle(.secondary)
             Text("No saved layouts yet")
-                .font(.headline)
+                .font(dense ? .title3.weight(.semibold) : .headline)
             Text("Save your open panes as a layout to bring them all back with one tap.")
-                .font(.subheadline)
+                .font(dense ? .body : .subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
-        .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.vertical, 16)
+        .frame(maxWidth: .infinity, minHeight: dense ? 150 : nil, alignment: .center)
+        .padding(.vertical, dense ? 16 : 16)
     }
 
     private var upsell: some View {
@@ -248,10 +253,11 @@ struct PhoneLayoutsView: View {
             HStack {
                 VStack(alignment: .leading) {
                     Text(bookmark.title.isEmpty ? bookmark.urlString : bookmark.title)
+                        .font(dense ? .title3 : .body)
                         .bold()
                         .lineLimit(1)
                     Text(bookmark.urlString)
-                        .font(.caption)
+                        .font(dense ? .subheadline : .caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                 }
@@ -260,7 +266,7 @@ struct PhoneLayoutsView: View {
                     .bold()
                     .foregroundStyle(Color.primary)
             }
-            .frame(minHeight: 44)
+            .frame(minHeight: dense ? 64 : 44)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

@@ -23,6 +23,8 @@ public struct EmptyCellView: View {
     /// The hint is for a first look; after it has been on screen once it stays out of the way.
     @AppStorage("hasSeenStartHint") private var hasSeenHint = false
     @State private var showsHint = false
+    /// The unfolded Duo's panes are half a display: a bigger mark and type.
+    @Environment(\.duoPanelDense) private var dense
 
     public init(isPane: Bool = false, isOnlyPane: Bool = false, onAddPane: (() -> Void)? = nil) {
         self.isPane = isPane
@@ -53,12 +55,12 @@ public struct EmptyCellView: View {
 
     private var fullContent: some View {
         VStack(spacing: 14) {
-            WaffleMark().frame(width: 88, height: 88)
+            WaffleMark().frame(width: dense ? 132 : 88, height: dense ? 132 : 88)
             Text(title)
-                .font(.system(.title2, design: .rounded, weight: .bold))
+                .font(.system(dense ? .largeTitle : .title2, design: .rounded, weight: .bold))
             if showsHint {
                 Text(hint)
-                    .font(.subheadline)
+                    .font(dense ? .body : .subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
