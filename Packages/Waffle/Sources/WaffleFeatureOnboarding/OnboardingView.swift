@@ -128,7 +128,7 @@ public struct OnboardingView: View {
             if isLast { finish() } else { go(1) }
         } label: {
             HStack(spacing: 8) {
-                Text(isLast ? "Get Started" : "Continue")
+                Text(LocalizedStringKey(isLast ? "Get Started" : "Continue"))
                 if !isLast { Image(systemName: "arrow.right").accessibilityHidden(true) }
             }
             .font(.headline)

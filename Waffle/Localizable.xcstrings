@@ -318,6 +318,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "A preset is a whole grid of pages you can bring back in one tap.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un preajuste es una cuadrícula entera de páginas que puedes recuperar con un toque."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un préréglage est une grille complète de pages que tu retrouves d’un seul toucher."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プリセットは、ページを並べたグリッド全体をワンタップで呼び出せるものです。"
+          }
+        }
+      }
+    },
     "A preset saves your whole grid — size and every page in it": {
       "extractionState": "manual",
       "localizations": {
@@ -414,6 +437,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Add a row or a column and every page makes room. Try it below.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añade una fila o una columna y cada página se hace sitio. Pruébalo abajo."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoute une rangée ou une colonne et chaque page se fait de la place. Essaie ci-dessous."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "行や列を追加すると、すべてのページが場所を空けます。下で試してみましょう。"
+          }
+        }
+      }
+    },
     "Add Column": {
       "extractionState": "manual",
       "localizations": {
@@ -461,6 +507,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Add one": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadir uno"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En ajouter un"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1つ増やす"
+          }
+        }
+      }
     },
     "Add Pane": {
       "extractionState": "manual",
@@ -678,52 +747,6 @@
       },
       "shouldGenerateSymbol": false
     },
-    "All bookmarks deleted": {
-      "extractionState": "stale",
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Todos los marcadores eliminados"
-          }
-        },
-        "fr-CA": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tous les signets ont été supprimés"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "すべてのブックマークを削除しました"
-          }
-        }
-      }
-    },
-    "All presets deleted": {
-      "extractionState": "stale",
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Todos los preajustes eliminados"
-          }
-        },
-        "fr-CA": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tous les préréglages ont été supprimés"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "すべてのプリセットを削除しました"
-          }
-        }
-      }
-    },
     "Also unlocks Waffle on iPad and iPhone Duo: bigger grids, a third and fourth pane, Desk Mode": {
       "extractionState": "manual",
       "localizations": {
@@ -819,6 +842,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Anything that is not a web address becomes a search.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todo lo que no sea una dirección web se convierte en una búsqueda."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout ce qui n’est pas une adresse Web devient une recherche."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Webアドレス以外は検索として扱われます。"
+          }
+        }
+      }
     },
     "Applies to every cell. Override it for a single cell or site from the cell's context menu. Sites listed here are never blocked.": {
       "extractionState": "manual",
@@ -987,6 +1033,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Back to two panes; the rest wait for you.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vuelves a dos paneles; el resto te espera."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retour à deux volets; les autres t’attendent."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2つのペインに戻ります。残りはそのまま待っています。"
+          }
+        }
+      }
     },
     "Back, forward, and reload act on the selected cell": {
       "extractionState": "manual",
@@ -1198,6 +1267,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Bookmarks and presets live in the sidebar and sync through iCloud.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los marcadores y preajustes están en la barra lateral y se sincronizan con iCloud."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les signets et les préréglages se trouvent dans la barre latérale et se synchronisent par iCloud."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ブックマークとプリセットはサイドバーにあり、iCloudで同期されます。"
+          }
+        }
+      }
+    },
     "Browse pages side by side and save your layouts with Waffle.": {
       "extractionState": "manual",
       "localizations": {
@@ -1270,6 +1362,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Browse the web in a grid, not in tabs.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Navega por la web en una cuadrícula, no en pestañas."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Navigue sur le Web dans une grille, pas dans des onglets."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タブではなく、グリッドでWebを見よう。"
+          }
+        }
+      }
+    },
     "Browsing": {
       "extractionState": "manual",
       "localizations": {
@@ -1341,6 +1456,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Cells with a drop are Syrup: larger grids unlock them.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Las celdas con una gota son de Syrup: las cuadrículas más grandes las desbloquean."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les cellules avec une goutte sont réservées à Syrup : les grilles plus grandes les débloquent."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "しずくマークのセルはSyrup用です。グリッドを大きくすると使えるようになります。"
+          }
+        }
+      }
     },
     "Chosen for swapping. Tap another cell to swap.": {
       "extractionState": "manual",
@@ -1486,6 +1624,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Closed": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cerrado"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fermé"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "閉じた状態"
+          }
+        }
+      }
+    },
     "Closes this extra window": {
       "extractionState": "manual",
       "localizations": {
@@ -1528,6 +1689,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "列"
+          }
+        }
+      }
+    },
+    "Command-L jumps to the address bar.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comando-L va a la barra de direcciones."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commande-L place le curseur dans la barre d’adresse."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Command-Lでアドレスバーに移動します。"
           }
         }
       }
@@ -1579,6 +1763,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Continue": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continuar"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continuer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "続ける"
+          }
+        }
+      }
     },
     "Copy To Selected Cell": {
       "extractionState": "manual",
@@ -1699,6 +1906,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Credits": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créditos"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crédits"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "クレジット"
+          }
+        }
+      }
     },
     "Data": {
       "extractionState": "manual",
@@ -2228,6 +2458,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Drag cells into a new order.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrastra las celdas para cambiar su orden."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fais glisser les cellules pour les réorganiser."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "セルをドラッグして並べ替えられます。"
+          }
+        }
+      }
+    },
     "Drag the divider between the panes to give one page more room. Try it here.": {
       "extractionState": "manual",
       "localizations": {
@@ -2251,6 +2504,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Drag the divider to give one page more room. Try it below.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrastra el divisor para dar más espacio a una página. Pruébalo abajo."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fais glisser le séparateur pour donner plus de place à une page. Essaie ci-dessous."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仕切りをドラッグして、ページの広さを変えられます。下で試してみましょう。"
+          }
+        }
+      }
     },
     "Drag to reorder, or tap to choose for swapping": {
       "extractionState": "manual",
@@ -2660,52 +2936,6 @@
       },
       "shouldGenerateSymbol": false
     },
-    "Failed to delete bookmarks: %@": {
-      "extractionState": "stale",
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Error al eliminar los marcadores: %@"
-          }
-        },
-        "fr-CA": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Échec de la suppression des signets : %@"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ブックマークを削除できませんでした：%@"
-          }
-        }
-      }
-    },
-    "Failed to delete presets: %@": {
-      "extractionState": "stale",
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Error al eliminar los preajustes: %@"
-          }
-        },
-        "fr-CA": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Échec de la suppression des préréglages : %@"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "プリセットを削除できませんでした：%@"
-          }
-        }
-      }
-    },
     "Failed to load products: %@": {
       "extractionState": "manual",
       "localizations": {
@@ -2777,6 +3007,52 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Focus on one page, then come back to both.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Concéntrate en una página y vuelve a ver las dos."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Concentre-toi sur une page, puis reviens aux deux."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1つのページに集中し、あとで両方に戻せます。"
+          }
+        }
+      }
+    },
+    "Fold it shut": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ciérralo"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Referme-le"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "閉じる"
+          }
+        }
+      }
     },
     "Folded shut, a button on the bar such as “1 of 3” switches between the panes you have open": {
       "extractionState": "manual",
@@ -2880,6 +3156,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Free up to %lld×%lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gratis hasta %lld×%lld"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gratuit jusqu’à %lld×%lld"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld×%lldまで無料"
+          }
+        }
+      }
+    },
     "Free: two panes, one saved layout, auto-refresh and content blocking. A one-time Syrup purchase adds more.": {
       "extractionState": "manual",
       "localizations": {
@@ -2903,6 +3202,52 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Free: two panes, one saved layout, auto-refresh and content blocking. A one-time Syrup purchase adds the rest.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gratis: dos paneles, un diseño guardado, actualización automática y bloqueo de contenido. Una compra única de Syrup añade el resto."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gratuit : deux volets, une disposition enregistrée, l’actualisation automatique et le blocage de contenu. Un achat unique de Syrup ajoute le reste."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無料：2つのペイン、保存できるレイアウト1件、自動更新、コンテンツブロック。Syrupを一度購入すると、残りの機能も使えます。"
+          }
+        }
+      }
+    },
+    "From the ••• menu, in Layouts & Bookmarks.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desde el menú •••, en Diseños y marcadores."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans le menu •••, sous Dispositions et signets."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "••• メニューの「レイアウトとブックマーク」から行います。"
+          }
+        }
+      }
     },
     "Fullscreen": {
       "extractionState": "manual",
@@ -3047,6 +3392,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Give a cell its own window, or the whole screen.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dale a una celda su propia ventana, o toda la pantalla."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Donne à une cellule sa propre fenêtre, ou tout l’écran."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "セルを独立したウインドウや画面全体で表示できます。"
+          }
+        }
+      }
     },
     "Go to Pane": {
       "extractionState": "manual",
@@ -3293,6 +3661,52 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Grow your waffle up to %lld×%lld cells.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haz crecer tu waffle hasta %lld×%lld celdas."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agrandis ton waffle jusqu’à %lld×%lld cellules."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ワッフルを最大%lld×%lldセルまで広げられます。"
+          }
+        }
+      }
+    },
+    "Half-fold it: pages on top, controls below.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Medio plegado: páginas arriba, controles abajo."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À moitié plié : les pages en haut, les commandes en bas."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "半分に折ると、上にページ、下にコントロールが表示されます。"
+          }
+        }
+      }
+    },
     "Half-fold your iPhone Duo for pages on top and controls below": {
       "extractionState": "manual",
       "localizations": {
@@ -3365,6 +3779,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Help & Feedback": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ayuda y comentarios"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aide et commentaires"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ヘルプとフィードバック"
+          }
+        }
+      }
+    },
     "Hide Desk Mode Offer": {
       "extractionState": "manual",
       "localizations": {
@@ -3389,6 +3826,75 @@
       },
       "shouldGenerateSymbol": false
     },
+    "It adds panes, opens layouts and bookmarks, and Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añade paneles y abre diseños, marcadores y los ajustes."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il ajoute des volets et ouvre les dispositions, les signets et les réglages."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ペインの追加、レイアウトとブックマーク、設定を開けます。"
+          }
+        }
+      }
+    },
+    "Keep the pages you open together and bring them back in one tap.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conserva las páginas que abres juntas y recupéralas con un toque."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Garde les pages que tu ouvres ensemble et retrouve-les d’un seul toucher."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一緒に開くページをまとめて保存し、ワンタップで呼び出せます。"
+          }
+        }
+      }
+    },
+    "Keyboard shortcuts": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atajos de teclado"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raccourcis clavier"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キーボードショートカット"
+          }
+        }
+      }
+    },
     "Larger Grids": {
       "extractionState": "manual",
       "localizations": {
@@ -3412,6 +3918,52 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Larger grids": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuadrículas más grandes"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grilles plus grandes"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大きなグリッド"
+          }
+        }
+      }
+    },
+    "Larger grids come with Syrup.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Las cuadrículas más grandes vienen con Syrup."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les grilles plus grandes sont offertes avec Syrup."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大きなグリッドはSyrupで使えます。"
+          }
+        }
+      }
     },
     "Layout %@": {
       "extractionState": "manual",
@@ -3606,6 +4158,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Maximize a pane": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximiza un panel"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agrandis un volet"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ペインを最大化"
+          }
+        }
+      }
+    },
     "Maximize Pane": {
       "extractionState": "manual",
       "localizations": {
@@ -3701,6 +4276,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Morning news": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noticias de la mañana"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouvelles du matin"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "朝のニュース"
+          }
+        }
+      }
     },
     "Moves the selected cell into its own window": {
       "extractionState": "manual",
@@ -3822,6 +4420,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Never Blocked": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nunca bloqueados"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jamais bloqués"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ブロックしないサイト"
+          }
+        }
+      }
     },
     "New": {
       "extractionState": "manual",
@@ -4205,6 +4826,52 @@
       },
       "shouldGenerateSymbol": false
     },
+    "On iPhone Duo the inner display opens up to four panes around the fold.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En el iPhone Duo, la pantalla interior admite hasta cuatro paneles alrededor del pliegue."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sur l’iPhone Duo, l’écran intérieur accueille jusqu’à quatre volets de part et d’autre du pli."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone Duoでは、内側のディスプレイに折り目をはさんで最大4つのペインを表示できます。"
+          }
+        }
+      }
+    },
+    "On the unfolded inner display.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En la pantalla interior desplegada."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sur l’écran intérieur déplié."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開いた内側のディスプレイで使えます。"
+          }
+        }
+      }
+    },
     "One Free Layout": {
       "extractionState": "manual",
       "localizations": {
@@ -4228,6 +4895,52 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "One saved layout is free. Syrup keeps as many as you like.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un diseño guardado es gratis. Con Syrup guardas todos los que quieras."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une disposition enregistrée est gratuite. Syrup en conserve autant que tu veux."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存できるレイアウトは1件まで無料です。Syrupなら好きなだけ保存できます。"
+          }
+        }
+      }
+    },
+    "One saved layout is free; Syrup keeps as many as you like.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un diseño guardado es gratis; con Syrup guardas todos los que quieras."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une disposition enregistrée est gratuite; Syrup en conserve autant que tu veux."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存できるレイアウトは1件まで無料。Syrupなら好きなだけ保存できます。"
+          }
+        }
+      }
     },
     "Only %@. One time. No subscription!": {
       "extractionState": "manual",
@@ -4271,6 +4984,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "選択中のセルで${bookmark}を開く"
+          }
+        }
+      }
+    },
+    "Open any bookmark in the selected pane.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abre cualquier marcador en el panel seleccionado."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvre n’importe quel signet dans le volet sélectionné."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ブックマークを、選択中のペインで開けます。"
           }
         }
       }
@@ -4647,6 +5383,52 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Page %lld of %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Página %lld de %lld"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Page %lld de %lld"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld / %lldページ"
+          }
+        }
+      }
+    },
+    "Pages on top, controls below.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Páginas arriba, controles abajo."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pages en haut, commandes en bas."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上にページ、下にコントロール。"
+          }
+        }
+      }
+    },
     "Pane %lld": {
       "extractionState": "manual",
       "localizations": {
@@ -4839,6 +5621,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Pop out and fullscreen": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Separar y pantalla completa"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Détacher et plein écran"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ポップアウトと全画面表示"
+          }
+        }
+      }
+    },
     "Pop out cells into their own windows": {
       "extractionState": "manual",
       "localizations": {
@@ -4886,6 +5691,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Pose": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Postura"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "状態"
+          }
+        }
+      }
     },
     "Position %lld, %@": {
       "extractionState": "manual",
@@ -4959,6 +5787,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Pour on the Syrup": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Échale Syrup"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajoute du Syrup"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Syrupをかけよう"
+          }
+        }
+      }
+    },
     "Preset": {
       "extractionState": "manual",
       "localizations": {
@@ -5031,6 +5882,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Presets & Bookmarks": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preajustes y marcadores"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Préréglages et signets"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プリセットとブックマーク"
+          }
+        }
+      }
+    },
     "Presets are part of Syrup. To apply, update, or manage presets you'll need Syrup.": {
       "extractionState": "manual",
       "localizations": {
@@ -5055,6 +5929,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Privacy Policy": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Política de privacidad"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Politique de confidentialité"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プライバシーポリシー"
+          }
+        }
+      }
+    },
     "Product not available.": {
       "extractionState": "manual",
       "localizations": {
@@ -5078,6 +5975,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Publisher": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Editor"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Éditeur"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "発行元"
+          }
+        }
+      }
     },
     "Purchase": {
       "extractionState": "manual",
@@ -5343,6 +6263,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Reload on a timer": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recarga con temporizador"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualisation minutée"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タイマーで再読み込み"
+          }
+        }
+      }
+    },
     "Reload Page": {
       "localizations": {
         "es": {
@@ -5479,6 +6422,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "列を削除"
+          }
+        }
+      }
+    },
+    "Remove one": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quitar uno"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En retirer un"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1つ減らす"
           }
         }
       }
@@ -5859,6 +6825,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Rows and columns": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filas y columnas"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rangées et colonnes"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "行と列"
+          }
+        }
+      }
+    },
     "Save": {
       "extractionState": "manual",
       "localizations": {
@@ -5882,6 +6871,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Save a layout": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guarda un diseño"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistre une disposition"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "レイアウトを保存"
+          }
+        }
+      }
     },
     "Save As…": {
       "extractionState": "manual",
@@ -5949,6 +6961,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "グリッドをプリセットとして保存"
+          }
+        }
+      }
+    },
+    "Save grid layouts and restore them anytime.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guarda diseños de cuadrícula y restáuralos cuando quieras."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistre des dispositions de grille et restaure-les en tout temps."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "グリッドのレイアウトを保存して、いつでも復元できます。"
           }
         }
       }
@@ -6024,6 +7059,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Save this layout": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guardar este diseño"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistrer cette disposition"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このレイアウトを保存"
+          }
+        }
+      }
     },
     "Save Your Layouts": {
       "extractionState": "manual",
@@ -6168,6 +7226,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Save your layouts": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guarda tus diseños"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistre tes dispositions"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "レイアウトを保存"
+          }
+        }
+      }
     },
     "Save your open panes as a layout to bring them all back with one tap.": {
       "extractionState": "manual",
@@ -6359,6 +7440,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Search Engine": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscador"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moteur de recherche"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "検索エンジン"
+          }
+        }
+      }
+    },
     "Search or enter a URL": {
       "extractionState": "manual",
       "localizations": {
@@ -6382,6 +7486,52 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Search or type an address": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Busca o escribe una dirección"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recherche ou saisis une adresse"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "検索またはアドレスを入力"
+          }
+        }
+      }
+    },
+    "Search the library": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Busca en la biblioteca"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recherche dans la bibliothèque"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ライブラリを検索"
+          }
+        }
+      }
     },
     "Set Grid Size": {
       "localizations": {
@@ -6452,6 +7602,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Shape your grid": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Da forma a tu cuadrícula"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Façonne ta grille"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "グリッドを調整"
+          }
+        }
+      }
     },
     "Share Layout": {
       "extractionState": "manual",
@@ -6621,6 +7794,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Size your panes": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajusta tus paneles"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajuste tes volets"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ペインのサイズを調整"
+          }
+        }
+      }
+    },
     "Skip": {
       "extractionState": "manual",
       "localizations": {
@@ -6740,6 +7936,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Support": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soporte"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assistance"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サポート"
+          }
+        }
+      }
     },
     "Swap Panes": {
       "extractionState": "manual",
@@ -7035,6 +8254,75 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Tap a cell": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toca una celda"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touche une cellule"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "セルをタップ"
+          }
+        }
+      }
+    },
+    "Tap a cell, then use the address bar to open a page.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toca una celda y usa la barra de direcciones para abrir una página."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touche une cellule, puis utilise la barre d’adresse pour ouvrir une page."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "セルをタップし、アドレスバーでページを開きます。"
+          }
+        }
+      }
+    },
+    "Tap a pane": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toca un panel"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touche un volet"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ペインをタップ"
+          }
+        }
+      }
+    },
     "Tap a preset to bring that entire layout back in one go": {
       "extractionState": "manual",
       "localizations": {
@@ -7083,6 +8371,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Tap one to open it in the selected cell.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toca uno para abrirlo en la celda seleccionada."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touches-en un pour l’ouvrir dans la cellule sélectionnée."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タップすると、選択中のセルで開きます。"
+          }
+        }
+      }
+    },
     "Tap this pane, then type an address below": {
       "extractionState": "manual",
       "localizations": {
@@ -7107,25 +8418,25 @@
       },
       "shouldGenerateSymbol": false
     },
-    "Tap to edit the address": {
-      "extractionState": "stale",
+    "Tap this pane, then type an address below.": {
+      "extractionState": "manual",
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Toca para editar la dirección"
+            "value": "Toca este panel y escribe una dirección abajo."
           }
         },
         "fr-CA": {
           "stringUnit": {
             "state": "translated",
-            "value": "Touchez pour modifier l'adresse"
+            "value": "Touche ce volet, puis saisis une adresse ci-dessous."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "タップしてアドレスを編集"
+            "value": "このペインをタップし、下のアドレス欄に入力します。"
           }
         }
       }
@@ -7320,6 +8631,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "The bar at the bottom controls the selected pane.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La barra inferior controla el panel seleccionado."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La barre du bas contrôle le volet sélectionné."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下のバーで、選択中のペインを操作します。"
+          }
+        }
+      }
+    },
     "The bar at the bottom controls the selected pane. Tap a pane below to select it.": {
       "extractionState": "manual",
       "localizations": {
@@ -7343,6 +8677,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "The field at the top of the sidebar finds any bookmark or preset.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El campo en la parte superior de la barra lateral encuentra cualquier marcador o preajuste."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le champ en haut de la barre latérale trouve n’importe quel signet ou préréglage."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サイドバー上部の検索欄で、ブックマークやプリセットを探せます。"
+          }
+        }
+      }
     },
     "The grid button in the toolbar adds and removes rows and columns. Try it here.": {
       "extractionState": "manual",
@@ -7392,6 +8749,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "The selected cell takes the address bar, back and reload.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La celda seleccionada usa la barra de direcciones, atrás y recargar."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La cellule sélectionnée utilise la barre d’adresse, Précédent et Actualiser."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択したセルが、アドレスバー、戻る、再読み込みの対象になります。"
+          }
+        }
+      }
+    },
     "The sidebar keeps bookmarks and presets, synced with iCloud across your devices": {
       "extractionState": "manual",
       "localizations": {
@@ -7439,6 +8819,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "The ••• menu": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El menú •••"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le menu •••"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "••• メニュー"
+          }
+        }
+      }
     },
     "The ••• menu adds panes, saves layouts and opens Settings": {
       "extractionState": "manual",
@@ -7506,6 +8909,29 @@
           "stringUnit": {
             "state": "translated",
             "value": "選択中のセルにはまだページが読み込まれていません。"
+          }
+        }
+      }
+    },
+    "Third and fourth panes": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tercer y cuarto panel"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Troisième et quatrième volets"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "3つ目と4つ目のペイン"
           }
         }
       }
@@ -7726,6 +9152,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Touch and hold Reload to refresh a pane automatically.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mantén pulsado Recargar para actualizar un panel automáticamente."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maintiens Actualiser enfoncé pour actualiser un volet automatiquement."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再読み込みを長押しすると、ペインを自動更新できます。"
+          }
+        }
+      }
+    },
     "Turn your iPhone sideways to put the panes side by side": {
       "extractionState": "manual",
       "localizations": {
@@ -7773,6 +9222,52 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Two on each side of the fold.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dos a cada lado del pliegue."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deux de chaque côté du pli."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "折り目の両側に2つずつ。"
+          }
+        }
+      }
+    },
+    "Two pages, one screen": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dos páginas, una pantalla"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deux pages, un écran"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2つのページを1画面に"
+          }
+        }
+      }
     },
     "Type a web address — or anything else, and Waffle searches for it": {
       "extractionState": "manual",
@@ -7845,6 +9340,121 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Type an address below to open a page.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escribe una dirección abajo para abrir una página."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saisis une adresse ci-dessous pour ouvrir une page."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下のアドレス欄にアドレスを入力してページを開きます。"
+          }
+        }
+      }
+    },
+    "Type an address or a search": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escribe una dirección o una búsqueda"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saisis une adresse ou une recherche"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アドレスまたは検索語を入力"
+          }
+        }
+      }
+    },
+    "Unfold for more": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Despliega para tener más"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplie pour en avoir plus"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開くとさらに広がる"
+          }
+        }
+      }
+    },
+    "Unlimited layouts": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diseños ilimitados"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dispositions illimitées"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "レイアウトは無制限"
+          }
+        }
+      }
+    },
+    "Up to four panes": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hasta cuatro paneles"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jusqu’à quatre volets"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最大4つのペイン"
+          }
+        }
+      }
     },
     "URL": {
       "extractionState": "manual",
@@ -8254,6 +9864,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Use the grid menu in the toolbar to add or remove them.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usa el menú de cuadrícula de la barra de herramientas para añadirlas o quitarlas."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilise le menu de la grille dans la barre d’outils pour en ajouter ou en retirer."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ツールバーのグリッドメニューで追加や削除ができます。"
+          }
+        }
+      }
+    },
     "Version %@ (%@)": {
       "extractionState": "manual",
       "localizations": {
@@ -8350,6 +9983,29 @@
       },
       "shouldGenerateSymbol": false
     },
+    "Waffle is free in a %lld×%lld grid. A one-time Syrup purchase adds the rest.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffle es gratis en una cuadrícula de %lld×%lld. Una compra única de Syrup añade el resto."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffle est gratuit dans une grille de %lld×%lld. Un achat unique de Syrup ajoute le reste."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffleは%lld×%lldのグリッドまで無料です。Syrupを一度購入すると、残りの機能も使えます。"
+          }
+        }
+      }
+    },
     "Waffle is free to use in a %lld×%lld grid. A one-time Syrup purchase unlocks everything else.": {
       "extractionState": "manual",
       "localizations": {
@@ -8379,6 +10035,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Waffle shows several webpages at once in a grid. Tap a cell to make it yours.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffle muestra varias páginas web a la vez en una cuadrícula. Toca una celda para elegirla."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffle affiche plusieurs pages Web à la fois dans une grille. Touche une cellule pour la sélectionner."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffleは複数のWebページをグリッドで同時に表示します。セルをタップして選びましょう。"
+          }
+        }
+      }
     },
     "Waffle shows several webpages at once, side by side in a grid of cells. Keep your mail, news, scores, and video in view at the same time — no tab switching.": {
       "extractionState": "manual",
@@ -8427,6 +10106,52 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Waffle stacks live pages in panes. Tap a pane, then use the bar below it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffle apila páginas en vivo en paneles. Toca un panel y usa la barra de abajo."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffle empile des pages en direct dans des volets. Touche un volet, puis utilise la barre en dessous."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffleはページをペインに重ねて表示します。ペインをタップして、下のバーで操作します。"
+          }
+        }
+      }
+    },
+    "Website": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sitio web"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Site Web"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Webサイト"
+          }
+        }
+      }
     },
     "Welcome to Waffle": {
       "extractionState": "manual",
@@ -8500,6 +10225,75 @@
       },
       "shouldGenerateSymbol": false
     },
+    "You never have to buy it. Syrup also unlocks more on iPad and iPhone Duo. Find it anytime in Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tienes que comprarlo. Syrup también desbloquea más en iPad y iPhone Duo. Lo encuentras cuando quieras en los ajustes."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien ne t’oblige à l’acheter. Syrup débloque aussi plus de fonctions sur iPad et iPhone Duo. Tu le trouves en tout temps dans les réglages."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "購入は必須ではありません。SyrupはiPadやiPhone Duoでも機能を追加します。設定からいつでも確認できます。"
+          }
+        }
+      }
+    },
+    "You never have to buy it. Syrup also works on iPad. Find it anytime in Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tienes que comprarlo. Syrup también funciona en iPad. Lo encuentras cuando quieras en los ajustes."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien ne t’oblige à l’acheter. Syrup fonctionne aussi sur iPad. Tu le trouves en tout temps dans les réglages."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "購入は必須ではありません。SyrupはiPadでも使えます。設定からいつでも確認できます。"
+          }
+        }
+      }
+    },
+    "You will see Syrup after this tour, and anytime later in Settings.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verás Syrup al terminar este recorrido, y cuando quieras en los ajustes."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu verras Syrup à la fin de cette visite, et en tout temps dans les réglages."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Syrupはこのツアーの後に表示され、設定からいつでも確認できます。"
+          }
+        }
+      }
+    },
     "You'll see Syrup right after this tour — and anytime later in Settings": {
       "extractionState": "manual",
       "localizations": {
@@ -8523,6 +10317,29 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Your free grid fits %lld×%lld cells.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu cuadrícula gratuita admite %lld×%lld celdas."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta grille gratuite compte %lld×%lld cellules."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無料のグリッドは%lld×%lldセルです。"
+          }
+        }
+      }
     },
     "Your Library": {
       "extractionState": "manual",
@@ -8595,6 +10412,52 @@
         }
       },
       "shouldGenerateSymbol": false
+    },
+    "Your library": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu biblioteca"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta bibliothèque"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ライブラリ"
+          }
+        }
+      }
+    },
+    "Your pages, side by side": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tus páginas, lado a lado"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tes pages, côte à côte"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ページを並べて表示"
+          }
+        }
+      }
     },
     "Your waffle grid lives in another window. Close this one to keep browsing there.": {
       "extractionState": "manual",
