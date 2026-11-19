@@ -100,6 +100,15 @@ public struct MainView: View {
                 if !grid.restoreFromSnapshotIfAvailable() {
                     grid.makeInitialItem()
                 }
+                #if DEBUG
+                DebugGridSeeding.applyIfRequested(to: grid)
+                switch UserDefaults.standard.string(forKey: "WaffleDebugSheet") {
+                case "settings": showSettingsSheet = true
+                case "syrup": session.requestSyrup()
+                case "rearrange": showRearrangeSheet = true
+                default: break
+                }
+                #endif
             }
             .onGeometryChange(for: CGFloat.self) { proxy in
                 proxy.size.width
