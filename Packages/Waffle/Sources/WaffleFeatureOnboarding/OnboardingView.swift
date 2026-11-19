@@ -2,31 +2,24 @@
 //  OnboardingView.swift
 //  WaffleFeatureOnboarding
 //
+//  First-run tour, laid out like Opalite's: a splash with the mark and one button, then paged
+//  pages under a row of page dots, Back and Skip as toolbar items, and a single Continue pinned
+//  below. Each page puts a small live grid or set of panes in the user's hands.
+//
 
 #if os(iOS)
 import SwiftUI
 import WaffleCore
 import WaffleDesignSystem
 
-/// Which device the tour is written for. The iPad tour describes the grid, toolbar and
-/// sidebar; the phone tours describe stacked panes and the bottom bar.
-public enum OnboardingVariant: Sendable, Equatable {
-    case iPad
-    case iPhone
-    /// iPhone Duo: the iPhone tour plus a page on the inner display and Desk Mode.
-    case iPhoneDuo
-
-    var isPhone: Bool { self != .iPad }
-}
-
-/// First-run tour. Every page mirrors the real main window — the same
-/// toolbar controls, grid selection glow, sidebar sections, and Syrup gates
-/// the user will see immediately after finishing.
 public struct OnboardingView: View {
     @AppStorage("hasCompletedOnboarding") private var done = false
 
-    @State private var pageIndex: Int = 0
-    @State private var cardHeight: CGFloat = 640
+    @State private var pageIndex = 0
+    @State private var showsSplash = true
+    @State private var goingForward = true
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let variant: OnboardingVariant
     private let pages: [OnboardingPage]
@@ -40,1302 +33,134 @@ public struct OnboardingView: View {
         self.pages = OnboardingPage.pages(for: variant)
         self.onFinished = onFinished
         #if DEBUG
-        // Simulator screenshots without taps: `-WaffleDebugOnboardingPage 3` opens the fourth page.
-        let start = UserDefaults.standard.integer(forKey: "WaffleDebugOnboardingPage")
-        _pageIndex = State(initialValue: min(max(start, 0), pages.count - 1))
+        // Simulator screenshots without taps: `-WaffleDebugOnboardingPage 2` opens the third
+        // page; leave it out for the splash.
+        if UserDefaults.standard.object(forKey: "WaffleDebugOnboardingPage") != nil {
+            let start = UserDefaults.standard.integer(forKey: "WaffleDebugOnboardingPage")
+            _pageIndex = State(initialValue: min(max(start, 0), pages.count - 1))
+            _showsSplash = State(initialValue: false)
+        }
         #endif
     }
 
     public var body: some View {
-        ZStack {
-            LinearGradient(
-                colors: [
-                    Color.wafflePrimary.opacity(0.6),
-                    Color.waffleSecondary.opacity(0.4),
-                    Color.waffleTertiary.opacity(0.3)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                // Top controls
-                HStack {
-                    ProgressPips(count: pages.count, index: pageIndex)
-                    Spacer()
-                    Button(String(localized: "Skip")) {
-                        finish()
-                    }
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(.white.opacity(0.9))
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .frame(minHeight: variant.isPhone ? 44 : nil)
-                    .background(.ultraThinMaterial, in: Capsule())
-                    .accessibilityHint(Text("Skips the tour"))
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
-
-                Spacer(minLength: 16)
-
-                // Main card
-                ZStack {
-                    RoundedRectangle(cornerRadius: 24)
-                        .fill(.regularMaterial)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 24)
-                                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                        )
-                        .shadow(color: .black.opacity(0.1), radius: 20, y: 10)
-
-                    let compact = variant.isPhone && cardHeight < Self.compactCardHeight
-                    ScrollView {
-                        contentForPage(pages[pageIndex].kind)
-                            .padding(compact ? 16 : 24)
-                    }
-                    .scrollBounceBehavior(.basedOnSize)
-                    .environment(\.onboardingCompact, compact)
-                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { cardHeight = $0 }
-                }
-                .padding(.horizontal, 20)
-                .frame(maxWidth: 700, maxHeight: 640)
-                .animation(.spring(response: 0.5, dampingFraction: 0.85), value: pageIndex)
-
-                Spacer(minLength: 16)
-
-                // Bottom controls
-                HStack {
-                    Button {
-                        withAnimation(.spring(response: 0.4)) {
-                            pageIndex = max(0, pageIndex - 1)
-                        }
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                            Text("Back")
-                        }
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.white.opacity(pageIndex == 0 ? 0.4 : 0.9))
-                        .frame(minHeight: variant.isPhone ? 44 : nil)
-                        .contentShape(Rectangle())
-                    }
-                    .disabled(pageIndex == 0)
-
-                    Spacer()
-
-                    Button {
-                        withAnimation(.spring(response: 0.4)) {
-                            if pageIndex < pages.count - 1 {
-                                pageIndex += 1
-                            } else {
-                                finish()
-                            }
-                        }
-                    } label: {
-                        HStack(spacing: 6) {
-                            Text(pageIndex == pages.count - 1 ? "Get Started" : "Next")
-                            Image(systemName: pageIndex == pages.count - 1 ? "checkmark.circle.fill" : "chevron.right")
-                        }
-                        .font(.headline)
-                        .foregroundStyle(Color.waffleTertiary)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
-                        .background(Color.wafflePrimary, in: Capsule())
-                    }
-                }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 24)
+        Group {
+            if showsSplash {
+                OnboardingSplash { withAnimation(.easeInOut(duration: 0.3)) { showsSplash = false } }
+                    .transition(.opacity)
+            } else {
+                tour.transition(.opacity)
             }
         }
     }
 
-    /// Cards shorter than this (the Duo's outer display) get the tighter phone pages.
-    private static let compactCardHeight: CGFloat = 600
+    private var isLast: Bool { pageIndex == pages.count - 1 }
+
+    private var tour: some View {
+        NavigationStack {
+            ZStack {
+                OnboardingStyle.background.ignoresSafeArea()
+                VStack(spacing: 0) {
+                    pageIndicator
+                        .padding(.top, 4)
+                        .padding(.bottom, 8)
+                    GeometryReader { proxy in
+                        OnboardingPageView(page: pages[pageIndex], probe: LayoutProbe(proxy), size: proxy.size)
+                            .id(pageIndex)
+                            .transition(pageTransition)
+                            .frame(width: proxy.size.width, height: proxy.size.height)
+                            .clipped()
+                            .simultaneousGesture(swipe)
+                    }
+                    continueButton
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                if pageIndex > 0 {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button { go(-1) } label: { Label("Back", systemImage: "chevron.backward") }
+                            .accessibilityIdentifier("backButton")
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { finish() } label: { Label("Skip", systemImage: "forward.end") }
+                        .accessibilityHint(Text("Skips the tour"))
+                        .accessibilityIdentifier("skipButton")
+                }
+            }
+            .tint(OnboardingStyle.ink)
+        }
+        .sensoryFeedback(.selection, trigger: pageIndex)
+    }
+
+    private var pageIndicator: some View {
+        HStack(spacing: 6) {
+            ForEach(0..<pages.count, id: \.self) { index in
+                Capsule(style: .continuous)
+                    .fill(index == pageIndex ? AnyShapeStyle(Color.waffleSecondary) : AnyShapeStyle(.tertiary))
+                    .frame(width: index == pageIndex ? 24 : 8, height: 8)
+            }
+        }
+        .animation(reduceMotion ? nil : .spring(response: 0.35, dampingFraction: 0.8), value: pageIndex)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text("Page \(pageIndex + 1) of \(pages.count)"))
+    }
+
+    private var continueButton: some View {
+        Button {
+            if isLast { finish() } else { go(1) }
+        } label: {
+            HStack(spacing: 8) {
+                Text(isLast ? "Get Started" : "Continue")
+                if !isLast { Image(systemName: "arrow.right").accessibilityHidden(true) }
+            }
+            .font(.headline)
+            .frame(maxWidth: .infinity)
+        }
+        .onboardingPrimaryButton()
+        .keyboardShortcut(.defaultAction)
+        .accessibilityIdentifier("continueButton")
+        .frame(maxWidth: OnboardingStyle.readableWidth)
+        .padding(.horizontal, 24)
+        .padding(.top, 10)
+        .padding(.bottom, 16)
+    }
+
+    // MARK: Paging
+
+    private var pageTransition: AnyTransition {
+        guard !reduceMotion else { return .opacity }
+        return .asymmetric(
+            insertion: .move(edge: goingForward ? .trailing : .leading).combined(with: .opacity),
+            removal: .move(edge: goingForward ? .leading : .trailing).combined(with: .opacity)
+        )
+    }
+
+    private var swipe: some Gesture {
+        DragGesture(minimumDistance: 40)
+            .onEnded { value in
+                guard abs(value.translation.width) > abs(value.translation.height) * 1.5 else { return }
+                if value.translation.width < -80, !isLast { go(1) }
+                else if value.translation.width > 80, pageIndex > 0 { go(-1) }
+            }
+    }
+
+    private func go(_ step: Int) {
+        let target = pageIndex + step
+        guard pages.indices.contains(target) else { return }
+        goingForward = step > 0
+        // Commit the direction first so the outgoing page leaves the right way.
+        Task { @MainActor in
+            withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : .spring(response: 0.45, dampingFraction: 0.86)) {
+                pageIndex = target
+            }
+        }
+    }
 
     private func finish() {
         done = true
         onFinished()
     }
-
-    @ContentBuilder
-    private func contentForPage(_ kind: OnboardingPage.Kind) -> some View {
-        switch kind {
-        case .welcome:
-            WelcomeCard()
-        case .grid:
-            GridCard()
-        case .toolbar:
-            ToolbarCard()
-        case .gridMenu:
-            GridMenuCard()
-        case .library:
-            LibraryCard()
-        case .syrup:
-            SyrupCard()
-        case .phoneWelcome:
-            PhoneWelcomeCard()
-        case .phoneBar:
-            PhoneBarCard()
-        case .phoneDivider:
-            PhoneDividerCard()
-        case .phoneLayouts:
-            PhoneLayoutsCard()
-        case .phoneUnfold:
-            PhoneUnfoldCard()
-        case .phoneSyrup:
-            PhoneSyrupCard(isDuo: variant == .iPhoneDuo)
-        }
-    }
 }
-
-// MARK: - Model
-
-private struct OnboardingPage: Identifiable {
-    enum Kind {
-        case welcome
-        case grid
-        case toolbar
-        case gridMenu
-        case library
-        case syrup
-        // iPhone and iPhone Duo
-        case phoneWelcome
-        case phoneBar
-        case phoneDivider
-        case phoneLayouts
-        case phoneUnfold
-        case phoneSyrup
-    }
-    let id = UUID()
-    let kind: Kind
-
-    static let all: [OnboardingPage] = [
-        .init(kind: .welcome),
-        .init(kind: .grid),
-        .init(kind: .toolbar),
-        .init(kind: .gridMenu),
-        .init(kind: .library),
-        .init(kind: .syrup)
-    ]
-
-    /// Five pages on iPhone; the Duo adds a sixth about unfolding and Desk Mode.
-    static let phone: [OnboardingPage] = [
-        .init(kind: .phoneWelcome),
-        .init(kind: .phoneBar),
-        .init(kind: .phoneDivider),
-        .init(kind: .phoneLayouts),
-        .init(kind: .phoneSyrup)
-    ]
-
-    static let phoneDuo: [OnboardingPage] = [
-        .init(kind: .phoneWelcome),
-        .init(kind: .phoneBar),
-        .init(kind: .phoneDivider),
-        .init(kind: .phoneLayouts),
-        .init(kind: .phoneUnfold),
-        .init(kind: .phoneSyrup)
-    ]
-
-    static func pages(for variant: OnboardingVariant) -> [OnboardingPage] {
-        switch variant {
-        case .iPad: all
-        case .iPhone: phone
-        case .iPhoneDuo: phoneDuo
-        }
-    }
-}
-
-// MARK: - Progress Indicator
-
-private struct ProgressPips: View {
-    let count: Int
-    let index: Int
-
-    var body: some View {
-        HStack(spacing: 6) {
-            ForEach(0..<count, id: \.self) { i in
-                Capsule()
-                    .fill(i <= index ? Color.white : Color.white.opacity(0.3))
-                    .frame(width: i == index ? 24 : 8, height: 6)
-            }
-        }
-        .animation(.spring(response: 0.4), value: index)
-    }
-}
-
-// MARK: - Short displays
-
-private struct OnboardingCompactKey: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    /// True when the tour card is too short for the roomy spacing (the iPhone Duo's outer
-    /// display): the phone pages use tighter spacing and smaller illustrations.
-    fileprivate var onboardingCompact: Bool {
-        get { self[OnboardingCompactKey.self] }
-        set { self[OnboardingCompactKey.self] = newValue }
-    }
-}
-
-// MARK: - Shared Pieces
-
-private struct CardHeader: View {
-    let icon: String
-    let title: LocalizedStringKey
-    let subtitle: LocalizedStringKey
-
-    var body: some View {
-        VStack(spacing: 8) {
-            Label(title, systemImage: icon)
-                .font(.title2.bold())
-                .foregroundStyle(Color.waffleSecondary)
-
-            Text(subtitle)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-    }
-}
-
-/// A faithful miniature of the real grid toolbar: back/forward, reload +
-/// address capsule, and the grid menu button.
-private struct MockToolbar: View {
-    let address: String
-
-    var body: some View {
-        HStack(spacing: 12) {
-            HStack(spacing: 10) {
-                Image(systemName: "chevron.backward")
-                Image(systemName: "chevron.forward")
-            }
-            .foregroundStyle(.secondary)
-
-            HStack(spacing: 8) {
-                Image(systemName: "arrow.clockwise")
-                    .foregroundStyle(.secondary)
-
-                Text(verbatim: address)
-                    .font(.subheadline)
-                    .lineLimit(1)
-                    .contentTransition(.numericText())
-
-                Spacer(minLength: 0)
-            }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 14)
-            .background(.thinMaterial, in: Capsule())
-
-            Image(systemName: "square.grid.3x3.fill")
-                .foregroundStyle(.secondary)
-        }
-        .padding(10)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
-    }
-}
-
-/// A tappable miniature waffle cell with the app's real selection treatment:
-/// an accent stroke with a soft glow, just like the grid.
-private struct MockCell: View {
-    let site: String
-    let icon: String
-    let tint: Color
-    let isSelected: Bool
-    var onTap: (() -> Void)? = nil
-
-    var body: some View {
-        Button {
-            onTap?()
-        } label: {
-            ZStack {
-                LinearGradient(
-                    colors: [Color.wafflePrimary.opacity(0.5), Color.waffleSecondary.opacity(0.35)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-
-                VStack(spacing: 6) {
-                    Image(systemName: icon)
-                        .font(.title2)
-                        .foregroundStyle(tint)
-                    Text(verbatim: site)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay {
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 3)
-                    .shadow(color: isSelected ? Color.accentColor.opacity(0.5) : .clear, radius: 8)
-                    .padding(1)
-            }
-            .scaleEffect(isSelected ? 1.02 : 1.0)
-            .animation(.spring(response: 0.3), value: isSelected)
-        }
-        .buttonStyle(.plain)
-        .disabled(onTap == nil)
-    }
-}
-
-private struct DemoSite {
-    let address: String
-    let icon: String
-    let tint: Color
-
-    static let samples: [DemoSite] = [
-        .init(address: "apple.com", icon: "applelogo", tint: .primary),
-        .init(address: "news.com", icon: "newspaper.fill", tint: .red),
-        .init(address: "mail.com", icon: "envelope.fill", tint: .blue),
-        .init(address: "video.com", icon: "play.rectangle.fill", tint: .purple)
-    ]
-}
-
-// MARK: - Card 1: Welcome
-
-private struct WelcomeLogo: View {
-    let animate: Bool
-
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 24)
-                .fill(LinearGradient(
-                    colors: [Color.wafflePrimary, Color.waffleSecondary],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ))
-                .frame(width: 100, height: 100)
-                .shadow(color: Color.waffleSecondary.opacity(0.5), radius: 20)
-
-            Image("waffleImage")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 72, height: 72)
-                .foregroundStyle(Color.waffleTertiary)
-                .symbolEffect(.bounce, value: animate)
-        }
-        .padding(.top, 12)
-    }
-}
-
-private struct WelcomeCard: View {
-    @State private var animate = false
-
-    var body: some View {
-        VStack(spacing: 24) {
-            WelcomeLogo(animate: animate)
-            VStack(spacing: 12) {
-                Text("Welcome to Waffle")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-
-                Text("Browse the web in a grid, not in tabs")
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
-            }
-
-            Text("Waffle shows several webpages at once, side by side in a grid of cells. Keep your mail, news, scores, and video in view at the same time — no tab switching.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-
-            // Tiny preview of what's coming
-            HStack(spacing: 6) {
-                ForEach(0..<3, id: \.self) { i in
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.waffleSecondary.opacity(0.3))
-                        .frame(width: 42, height: 32)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 6)
-                                .stroke(i == 0 ? Color.accentColor : .clear, lineWidth: 2)
-                        )
-                }
-            }
-            .padding(.bottom, 8)
-        }
-        .onAppear { animate = true }
-    }
-}
-
-// MARK: - Card 2: The Grid
-
-private struct GridCard: View {
-    @State private var selectedIndex = 0
-
-    var body: some View {
-        VStack(spacing: 20) {
-            CardHeader(
-                icon: "square.grid.2x2.fill",
-                title: "This Is Your Waffle",
-                subtitle: "Every cell is a full browser. Tap a cell below to select it — just like in the app."
-            )
-
-            VStack(spacing: 10) {
-                // The address bar follows the selection, exactly like the real toolbar.
-                MockToolbar(address: DemoSite.samples[selectedIndex].address)
-
-                VStack(spacing: 8) {
-                    ForEach(0..<2, id: \.self) { row in
-                        HStack(spacing: 8) {
-                            ForEach(0..<2, id: \.self) { col in
-                                let i = row * 2 + col
-                                MockCell(
-                                    site: DemoSite.samples[i].address,
-                                    icon: DemoSite.samples[i].icon,
-                                    tint: DemoSite.samples[i].tint,
-                                    isSelected: selectedIndex == i,
-                                    onTap: { selectedIndex = i }
-                                )
-                                .frame(height: 110)
-                            }
-                        }
-                    }
-                }
-            }
-            .padding(12)
-            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
-
-            VStack(alignment: .leading, spacing: 12) {
-                ConceptPoint(number: "1", text: "The selected cell glows with a colored border")
-                ConceptPoint(number: "2", text: "The address bar always shows the selected cell's page")
-                ConceptPoint(number: "3", text: "Back, forward, and reload act on the selected cell")
-            }
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-        }
-    }
-}
-
-private struct ConceptPoint: View {
-    let number: String
-    let text: LocalizedStringKey
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Text(verbatim: number)
-                .font(.caption.bold())
-                .foregroundStyle(.white)
-                .frame(width: 22, height: 22)
-                .background(Color.waffleSecondary, in: Circle())
-
-            Text(text)
-                .font(.subheadline)
-        }
-    }
-}
-
-// MARK: - Card 3: The Toolbar
-
-private struct ToolbarCard: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            CardHeader(
-                icon: "magnifyingglass",
-                title: "Search and Navigate",
-                subtitle: "The toolbar at the top of the window drives whichever cell is selected"
-            )
-
-            MockToolbar(address: String(localized: "Search or enter a URL"))
-
-            VStack(alignment: .leading, spacing: 14) {
-                ToolbarTip(
-                    icon: "keyboard",
-                    text: "Type a web address — or anything else, and Waffle searches for it"
-                )
-                ToolbarTip(
-                    icon: "chevron.backward",
-                    text: "The back and forward buttons step through the selected cell's history"
-                )
-                ToolbarTip(
-                    icon: "arrow.clockwise",
-                    text: "Reload refreshes just the selected cell"
-                )
-                ToolbarTip(
-                    icon: "gearshape.fill",
-                    text: "Pick your search engine in Settings, in the sidebar"
-                )
-            }
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-
-            // Keyboard shortcuts, as on iPad with a hardware keyboard.
-            VStack(spacing: 8) {
-                Text("With a keyboard attached")
-                    .font(.caption.bold())
-                    .foregroundStyle(.secondary)
-                HStack(spacing: 16) {
-                    ShortcutBadge(keys: "⌘[", label: "Back")
-                    ShortcutBadge(keys: "⌘]", label: "Forward")
-                    ShortcutBadge(keys: "⌘R", label: "Reload")
-                }
-            }
-            .padding()
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-        }
-    }
-}
-
-private struct ToolbarTip: View {
-    let icon: String
-    let text: LocalizedStringKey
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.body)
-                .foregroundStyle(Color.waffleSecondary)
-                .frame(width: 24)
-
-            Text(text)
-                .font(.subheadline)
-        }
-    }
-}
-
-private struct ShortcutBadge: View {
-    let keys: String
-    let label: LocalizedStringKey
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Text(verbatim: keys)
-                .font(.subheadline.monospaced().bold())
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8))
-            Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
-    }
-}
-
-// MARK: - Card 4: The Grid Menu
-
-private struct GridMenuCard: View {
-    @State private var rows = 2
-    @State private var cols = 2
-
-    var body: some View {
-        VStack(spacing: 20) {
-            CardHeader(
-                icon: "square.grid.3x3.fill",
-                title: "Shape Your Grid",
-                subtitle: "The grid button in the toolbar adds and removes rows and columns. Try it here."
-            )
-
-            // The same actions the real grid menu offers.
-            VStack(spacing: 0) {
-                MenuRow(icon: "rectangle.split.1x2.fill", title: "Add Row") {
-                    rows = min(rows + 1, AppConfiguration.maxPremiumRows)
-                }
-                MenuRow(icon: "rectangle.split.1x2", title: "Subtract Row") {
-                    rows = max(rows - 1, 1)
-                }
-                Divider().padding(.horizontal)
-                MenuRow(icon: "square.split.2x1.fill", title: "Add Column") {
-                    cols = min(cols + 1, AppConfiguration.maxPremiumCols)
-                }
-                MenuRow(icon: "square.split.2x1", title: "Subtract Column") {
-                    cols = max(cols - 1, 1)
-                }
-            }
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-
-            MiniGridPreview(rows: rows, cols: cols)
-                .frame(width: 170, height: 150)
-
-            VStack(spacing: 8) {
-                HStack {
-                    Image(systemName: "info.circle.fill")
-                        .foregroundStyle(Color.waffleSecondary)
-                    Text("Free grids go up to \(AppConfiguration.maxFreeRows)×\(AppConfiguration.maxFreeCols)")
-                        .font(.subheadline)
-                }
-                HStack {
-                    Image(systemName: "drop.fill")
-                        .foregroundStyle(Color.waffleTertiary)
-                    Text("Syrup unlocks up to \(AppConfiguration.maxPremiumRows)×\(AppConfiguration.maxPremiumCols)")
-                        .font(.subheadline)
-                }
-            }
-            .padding()
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-        }
-    }
-}
-
-private struct MenuRow: View {
-    let icon: String
-    let title: LocalizedStringKey
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack {
-                Text(title)
-                    .font(.subheadline)
-                Spacer()
-                Image(systemName: icon)
-                    .foregroundStyle(Color.waffleSecondary)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-private struct MiniGridPreview: View {
-    let rows: Int
-    let cols: Int
-
-    var body: some View {
-        VStack(spacing: 4) {
-            ForEach(0..<rows, id: \.self) { _ in
-                HStack(spacing: 4) {
-                    ForEach(0..<cols, id: \.self) { _ in
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color.waffleSecondary.opacity(0.3))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color.waffleSecondary.opacity(0.5), lineWidth: 1)
-                            )
-                    }
-                }
-            }
-        }
-        .padding(8)
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
-        .animation(.spring(response: 0.3), value: rows)
-        .animation(.spring(response: 0.3), value: cols)
-    }
-}
-
-// MARK: - Card 5: Bookmarks & Presets
-
-private struct LibraryCard: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            CardHeader(
-                icon: "sidebar.left",
-                title: "Your Library",
-                subtitle: "The sidebar keeps bookmarks and presets, synced with iCloud across your devices"
-            )
-
-            // Bookmarks section, mirroring the sidebar.
-            VStack(alignment: .leading, spacing: 12) {
-                Label("Bookmarks", systemImage: "bookmark.fill")
-                    .font(.headline)
-                    .foregroundStyle(Color.waffleSecondary)
-
-                LibraryPoint(
-                    icon: "square.and.arrow.down.fill",
-                    text: "Quick Save bookmarks the page in the selected cell"
-                )
-                LibraryPoint(
-                    icon: "hand.tap.fill",
-                    text: "Tap a bookmark to open it in the selected cell"
-                )
-                LibraryPoint(
-                    icon: "hand.draw.fill",
-                    text: "Or drag a bookmark onto any cell to open it there"
-                )
-            }
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-
-            // Presets section, mirroring the sidebar.
-            VStack(alignment: .leading, spacing: 12) {
-                Label("Presets", systemImage: "square.grid.3x3.fill")
-                    .font(.headline)
-                    .foregroundStyle(Color.waffleSecondary)
-
-                LibraryPoint(
-                    icon: "square.and.arrow.down.fill",
-                    text: "A preset saves your whole grid — size and every page in it"
-                )
-                LibraryPoint(
-                    icon: "arrow.right",
-                    text: "Tap a preset to bring that entire layout back in one go"
-                )
-                LibraryPoint(
-                    icon: "sparkles",
-                    text: "Great for routines: a morning news grid, a work grid, a game-day grid"
-                )
-            }
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundStyle(Color.waffleSecondary)
-                Text("Search at the top of the sidebar finds any bookmark or preset")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            .padding()
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-        }
-    }
-}
-
-private struct LibraryPoint: View {
-    let icon: String
-    let text: LocalizedStringKey
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.body)
-                .foregroundStyle(Color.waffleSecondary)
-                .frame(width: 24)
-
-            Text(text)
-                .font(.subheadline)
-        }
-    }
-}
-
-// MARK: - Card 6: Syrup
-
-private struct SyrupCard: View {
-    var body: some View {
-        VStack(spacing: 20) {
-            VStack(spacing: 8) {
-                HStack(spacing: 8) {
-                    Image(systemName: "drop.fill")
-                        .font(.title2)
-                        .foregroundStyle(Color.waffleTertiary)
-                    Text("Pour On the Syrup")
-                        .font(.title2.bold())
-                }
-
-                Text("Waffle is free to use in a \(AppConfiguration.maxFreeRows)×\(AppConfiguration.maxFreeCols) grid. A one-time Syrup purchase unlocks everything else.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-
-            VStack(spacing: 12) {
-                PremiumFeatureRow(
-                    icon: "rectangle.split.3x3",
-                    title: "Larger Grids",
-                    description: "Grow your waffle up to \(AppConfiguration.maxPremiumRows)×\(AppConfiguration.maxPremiumCols) cells"
-                )
-                PremiumFeatureRow(
-                    icon: "rectangle.on.rectangle",
-                    title: "Pop Out",
-                    description: "Detach a cell into its own window, then pop it back into the grid"
-                )
-                PremiumFeatureRow(
-                    icon: "arrow.up.left.and.arrow.down.right",
-                    title: "Fullscreen",
-                    description: "Temporarily focus on a single cell, then jump back to the grid"
-                )
-                PremiumFeatureRow(
-                    icon: "arrow.left.arrow.right.square",
-                    title: "Rearrange",
-                    description: "Drag cells into a new order from the grid menu"
-                )
-                PremiumFeatureRow(
-                    icon: "square.grid.3x3",
-                    title: "Presets",
-                    description: "Save grid layouts and restore them anytime"
-                )
-            }
-            .padding()
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-
-            Text("You'll see Syrup right after this tour — and anytime later in Settings")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-    }
-}
-
-private struct PremiumFeatureRow: View {
-    let icon: String
-    let title: LocalizedStringKey
-    let description: LocalizedStringKey
-
-    var body: some View {
-        HStack(spacing: 14) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(Color.waffleSecondary)
-                .frame(width: 32)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.subheadline.bold())
-                Text(description)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            Image(systemName: "drop.fill")
-                .font(.caption)
-                .foregroundStyle(Color.waffleTertiary.opacity(0.6))
-        }
-    }
-}
-
-// MARK: - iPhone and iPhone Duo
-
-/// The phone bottom bar in miniature: back, address, maximize, reload and the ••• menu.
-private struct MockPhoneBar: View {
-    let address: String
-
-    var body: some View {
-        HStack(spacing: 6) {
-            circle("chevron.backward")
-
-            HStack(spacing: 0) {
-                Text(verbatim: address)
-                    .font(.footnote)
-                    .lineLimit(1)
-                    .contentTransition(.numericText())
-                Spacer(minLength: 0)
-            }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 12)
-            .background(.thinMaterial, in: Capsule())
-
-            circle("arrow.up.left.and.arrow.down.right")
-            circle("arrow.clockwise")
-            circle("ellipsis")
-        }
-        .padding(8)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
-        .accessibilityHidden(true)
-    }
-
-    private func circle(_ systemImage: String) -> some View {
-        Image(systemName: systemImage)
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-            .frame(width: 32, height: 32)
-            .background(.thinMaterial, in: Circle())
-    }
-}
-
-/// Two stacked panes with the real divider between them. With `isAdjustable` the divider
-/// can be dragged and double tapped, exactly like the app.
-private struct MockStackedPanes: View {
-    @Binding var selectedIndex: Int
-    @Binding var ratio: Double
-    var isAdjustable = false
-    var height: CGFloat = 200
-
-    @State private var dragStartRatio: Double?
-
-    private var dividerHeight: CGFloat { isAdjustable ? 24 : 8 }
-
-    var body: some View {
-        let usable = max(height - dividerHeight, 1)
-        VStack(spacing: 0) {
-            pane(0)
-                .frame(height: usable * ratio)
-            divider(usable: usable)
-            pane(1)
-                .frame(height: usable * (1 - ratio))
-        }
-        .frame(height: height)
-    }
-
-    private func pane(_ index: Int) -> some View {
-        MockCell(
-            site: DemoSite.samples[index].address,
-            icon: DemoSite.samples[index].icon,
-            tint: DemoSite.samples[index].tint,
-            isSelected: selectedIndex == index,
-            onTap: { selectedIndex = index }
-        )
-    }
-
-    @ViewBuilder
-    private func divider(usable: CGFloat) -> some View {
-        if isAdjustable {
-            Capsule()
-                .fill(Color.secondary.opacity(0.55))
-                .frame(width: 44, height: 5)
-                .frame(maxWidth: .infinity, minHeight: dividerHeight, maxHeight: dividerHeight)
-                .contentShape(Rectangle())
-                .gesture(
-                    DragGesture(minimumDistance: 2)
-                        .onChanged { value in
-                            let start = dragStartRatio ?? ratio
-                            dragStartRatio = start
-                            ratio = PaneRatios.clamp(start + Double(value.translation.height / usable))
-                        }
-                        .onEnded { _ in dragStartRatio = nil }
-                )
-                .onTapGesture(count: 2) {
-                    withAnimation(.snappy) { ratio = 0.5 }
-                }
-                .accessibilityLabel(Text("Pane divider"))
-        } else {
-            Color.clear.frame(height: dividerHeight)
-        }
-    }
-}
-
-private struct PhoneWelcomeCard: View {
-    @State private var animate = false
-    /// Regular width means the iPhone Duo's inner display, where the two panes sit side by side.
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    private var sideBySide: Bool { horizontalSizeClass == .regular }
-
-    var body: some View {
-        VStack(spacing: 24) {
-            WelcomeLogo(animate: animate)
-
-            VStack(spacing: 12) {
-                Text("Welcome to Waffle")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .multilineTextAlignment(.center)
-
-                Text("Two live pages on one screen")
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-
-            Text(sideBySide
-                 ? "Waffle shows two webpages at once, side by side, and both stay live. Follow your mail and the news, or the score and the stream, without switching tabs."
-                 : "Waffle shows two webpages at once, one above the other, and both stay live. Follow your mail and the news, or the score and the stream, without switching tabs.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-
-            // A taste of what is coming: two panes (stacked, or side by side on the inner display) and the bar.
-            VStack(spacing: 8) {
-                let panes = ForEach(0..<2, id: \.self) { i in
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.waffleSecondary.opacity(0.3))
-                        .frame(height: sideBySide ? 52 : 34)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(i == 0 ? Color.accentColor : .clear, lineWidth: 2)
-                        )
-                }
-                if sideBySide {
-                    HStack(spacing: 4) { panes }
-                } else {
-                    VStack(spacing: 4) { panes }
-                }
-                Capsule()
-                    .fill(Color.waffleSecondary.opacity(0.3))
-                    .frame(height: 14)
-            }
-            .frame(width: sideBySide ? 160 : 120)
-            .padding(.bottom, 8)
-            .accessibilityHidden(true)
-        }
-        .onAppear { animate = true }
-    }
-}
-
-private struct PhoneBarCard: View {
-    @Environment(\.onboardingCompact) private var compact
-    @State private var selectedIndex = 0
-    @State private var ratio = 0.5
-
-    var body: some View {
-        VStack(spacing: compact ? 10 : 20) {
-            CardHeader(
-                icon: "magnifyingglass",
-                title: "Search and Navigate",
-                subtitle: "The bar at the bottom controls the selected pane. Tap a pane below to select it."
-            )
-
-            VStack(spacing: 10) {
-                MockStackedPanes(selectedIndex: $selectedIndex, ratio: $ratio, height: compact ? 84 : 130)
-                MockPhoneBar(address: DemoSite.samples[selectedIndex].address)
-            }
-            .padding(12)
-            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
-
-            VStack(alignment: .leading, spacing: compact ? 8 : 14) {
-                ToolbarTip(
-                    icon: "keyboard",
-                    text: "Type a web address, or anything else, and Waffle searches for it"
-                )
-                ToolbarTip(
-                    icon: "arrow.clockwise",
-                    text: "Back and Reload act on the selected pane. Touch and hold Reload for a refresh timer"
-                )
-                ToolbarTip(
-                    icon: "ellipsis",
-                    text: "The ••• menu adds panes, saves layouts and opens Settings"
-                )
-            }
-            .padding(compact ? 10 : 16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-        }
-    }
-}
-
-private struct PhoneDividerCard: View {
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @Environment(\.onboardingCompact) private var compact
-    @State private var selectedIndex = 0
-    @State private var ratio = 0.5
-
-    var body: some View {
-        VStack(spacing: compact ? 10 : 20) {
-            CardHeader(
-                icon: "rectangle.split.1x2.fill",
-                title: "Size Your Panes",
-                subtitle: "Drag the divider between the panes to give one page more room. Try it here."
-            )
-
-            VStack(spacing: 10) {
-                MockStackedPanes(selectedIndex: $selectedIndex, ratio: $ratio, isAdjustable: true, height: compact ? 100 : 160)
-                MockPhoneBar(address: DemoSite.samples[selectedIndex].address)
-            }
-            .padding(12)
-            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
-
-            VStack(alignment: .leading, spacing: compact ? 8 : 12) {
-                ConceptPoint(number: "1", text: "Double tap the divider to split the screen evenly")
-                ConceptPoint(number: "2", text: "Maximize fills the screen with one pane. Tap it again to bring the other back")
-                ConceptPoint(number: "3", text: horizontalSizeClass == .regular
-                    ? "Fold your iPhone Duo shut to stack the panes one above the other"
-                    : "Turn your iPhone sideways to put the panes side by side")
-            }
-            .padding(compact ? 10 : 16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-        }
-    }
-}
-
-private struct PhoneLayoutsCard: View {
-    @Environment(\.onboardingCompact) private var compact
-    var body: some View {
-        VStack(spacing: compact ? 10 : 20) {
-            CardHeader(
-                icon: "rectangle.split.2x1.fill",
-                title: "Save Your Layouts",
-                subtitle: "A layout remembers your open panes: the page in each one and how much room each has"
-            )
-
-            // The Layouts list, in miniature.
-            VStack(spacing: 0) {
-                layoutRow(name: "Apple + News", detail: "apple.com, news.com")
-                Divider().padding(.horizontal)
-                layoutRow(name: "Mail + Video", detail: "mail.com, video.com")
-            }
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-            .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: compact ? 8 : 14) {
-                LibraryPoint(
-                    icon: "square.and.arrow.down.fill",
-                    text: "Open ••• and choose Save Layout to keep your panes. Waffle names it after the sites"
-                )
-                LibraryPoint(
-                    icon: "arrow.right",
-                    text: "Tap a saved layout in Layouts & Bookmarks to bring it all back at once"
-                )
-                LibraryPoint(
-                    icon: "icloud.fill",
-                    text: "Layouts and bookmarks sync with iCloud across your devices"
-                )
-            }
-            .padding(compact ? 10 : 16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-        }
-    }
-
-    private func layoutRow(name: String, detail: String) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: "rectangle.split.2x1.fill")
-                .foregroundStyle(Color.waffleSecondary)
-                .frame(width: 28)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(verbatim: name)
-                    .font(.subheadline.bold())
-                Text(verbatim: detail)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-            Image(systemName: "arrow.right")
-                .font(.footnote.bold())
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, compact ? 8 : 12)
-    }
-}
-
-/// iPhone Duo only: the inner display with the fold, and the half-folded Desk Mode pose.
-private struct PhoneUnfoldCard: View {
-    @Environment(\.onboardingCompact) private var compact
-    var body: some View {
-        VStack(spacing: compact ? 10 : 20) {
-            CardHeader(
-                icon: "rectangle.split.2x2.fill",
-                title: "Unfold for More",
-                subtitle: "Your iPhone Duo has a second, larger display inside"
-            )
-
-            HStack(alignment: .top, spacing: 12) {
-                VStack(spacing: 8) {
-                    unfolded
-                    Text("Unfolded")
-                        .font(.caption.bold())
-                        .foregroundStyle(.secondary)
-                }
-                VStack(spacing: 8) {
-                    halfFolded
-                    Text("Half-folded")
-                        .font(.caption.bold())
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(12)
-            .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 16))
-            .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: compact ? 8 : 14) {
-                ToolbarTip(
-                    icon: "rectangle.split.2x2",
-                    text: "Unfolded, there is room for four panes at any size, kept clear of the fold"
-                )
-                ToolbarTip(
-                    icon: "laptopcomputer",
-                    text: "Half-folded like a laptop, Desk Mode puts the pages on the upright half and the controls on the flat half"
-                )
-                ToolbarTip(
-                    icon: "1.circle",
-                    text: "Folded shut, a button on the bar such as “1 of 3” switches between the panes you have open"
-                )
-            }
-            .padding(compact ? 10 : 16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-        }
-    }
-
-    private func miniPane(selected: Bool = false) -> some View {
-        RoundedRectangle(cornerRadius: 5)
-            .fill(Color.waffleSecondary.opacity(0.3))
-            .overlay(
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(selected ? Color.accentColor : Color.waffleSecondary.opacity(0.5), lineWidth: selected ? 2 : 1)
-            )
-    }
-
-    /// Inner display: two columns of two panes with the fold between them.
-    private var unfolded: some View {
-        HStack(spacing: 0) {
-            VStack(spacing: 4) { miniPane(selected: true); miniPane() }
-            Rectangle()
-                .fill(Color.secondary.opacity(0.35))
-                .frame(width: 6)
-                .padding(.horizontal, 2)
-            VStack(spacing: 4) { miniPane(); miniPane() }
-        }
-        .padding(6)
-        .frame(height: compact ? 84 : 120)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
-    }
-
-    /// Desk Mode: pages on the upright half, a control deck on the flat half.
-    private var halfFolded: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 4) { miniPane(selected: true); miniPane() }
-                .padding(6)
-                .frame(maxHeight: .infinity)
-            Rectangle()
-                .fill(Color.secondary.opacity(0.35))
-                .frame(height: 4)
-            HStack(spacing: 4) {
-                ForEach(0..<3, id: \.self) { _ in
-                    Capsule().fill(Color.waffleSecondary.opacity(0.35)).frame(height: 10)
-                }
-            }
-            .padding(8)
-            .frame(maxHeight: .infinity)
-        }
-        .frame(height: compact ? 84 : 120)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
-    }
-}
-
-private struct PhoneSyrupCard: View {
-    @Environment(\.onboardingCompact) private var compact
-    let isDuo: Bool
-
-    var body: some View {
-        VStack(spacing: compact ? 10 : 20) {
-            VStack(spacing: 8) {
-                HStack(spacing: 8) {
-                    Image(systemName: "drop.fill")
-                        .font(.title2)
-                        .foregroundStyle(Color.waffleTertiary)
-                    Text("Pour On the Syrup")
-                        .font(.title2.bold())
-                }
-
-                Text("Free: two panes, one saved layout, auto-refresh and content blocking. A one-time Syrup purchase adds more.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-
-            VStack(spacing: 12) {
-                PremiumFeatureRow(
-                    icon: "rectangle.split.2x1",
-                    title: "Unlimited Layouts",
-                    description: "Save as many layouts as you like"
-                )
-                if isDuo {
-                    PremiumFeatureRow(
-                        icon: "rectangle.split.2x2",
-                        title: "More Panes",
-                        description: "A third and fourth pane when you unfold your iPhone Duo"
-                    )
-                    PremiumFeatureRow(
-                        icon: "laptopcomputer",
-                        title: "Desk Mode",
-                        description: "Half-fold your iPhone Duo for pages on top and controls below"
-                    )
-                }
-            }
-            .padding(compact ? 10 : 16)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-
-            Text(LocalizedStringKey(isDuo
-                 ? "Syrup also unlocks Waffle on iPad: bigger grids, pop-out, fullscreen and rearranging."
-                 : "Syrup also unlocks Waffle on iPad and iPhone Duo: bigger grids, a third and fourth pane, Desk Mode."))
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-
-            Text("You never have to buy it. Get Syrup anytime from Settings, or when you reach a limit.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-    }
-}
-
 #endif
