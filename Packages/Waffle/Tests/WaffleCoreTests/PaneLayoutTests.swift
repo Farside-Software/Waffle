@@ -541,7 +541,7 @@ struct LayoutNamingTests {
     }
 
     @Test func sharedTextCarriesTheGetWaffleLink() {
-        let link = "https://molargiksoftware.com/go/waffle?ct=share_layout"
+        let link = "https://farsidesoftware.com/go/waffle?ct=share_layout"
         let preset = Preset(name: "Wikipedia + Apple", rows: 1, cols: 2, urls: ["https://wikipedia.org"], paneCount: 2)
         let lines = PresetShare.text(for: preset).split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
         #expect(lines[1].hasPrefix("waffle://"))

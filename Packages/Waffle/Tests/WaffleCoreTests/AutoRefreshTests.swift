@@ -110,7 +110,7 @@ struct PresetShareTests {
         #expect(lines[0] == "Morning (1x2)")
         #expect(lines[1] == "waffle://preset/\(id.uuidString)")
         #expect(DeepLink(url: URL(string: lines[1])!) == .openPreset(id))
-        #expect(lines[2] == "https://molargiksoftware.com/go/waffle?ct=share_layout")
+        #expect(lines[2] == "https://farsidesoftware.com/go/waffle?ct=share_layout")
         #expect(lines[3] == "")
         #expect(Array(lines[4...]) == ["https://a.example", "https://b.example"])
     }

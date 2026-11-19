@@ -1,15 +1,15 @@
-<img src="Icons/WaffleIcon-iOS-Default-1024x1024@1x.png" alt="Waffle" width="128" height="128">
+<img src="Icons/AppIcon.png" alt="Waffle" width="128" height="128">
 
 # Waffle
 
-A grid-based web browser for iPad that reimagines how users interact with multiple webpages at once.
+A grid-based web browser for iPad and iPhone that reimagines how users interact with multiple webpages at once.
 
 ## Overview
 
 Unlike traditional tab-based browsers, Waffle organizes pages into a customizable grid. Each cell hosts its own browsing context, allowing users to visually organize workflows, research sets, and dashboards side-by-side. Built with SwiftUI and the native WebKit-for-SwiftUI APIs (`WebView`/`WebPage`) for iOS 27, it offers a lightweight, intuitive, and deeply Apple-native browsing experience.
 
 Waffle is designed for:
-- **iPad power users** who multitask visually
+- **iPad and iPhone power users** who multitask visually
 - **Researchers and developers** who reference multiple sources simultaneously
 - **Designers and creatives** who prefer spatial memory over tab stacks
 
@@ -59,7 +59,7 @@ One-time purchase, shared with your family via Family Sharing. Unlocks:
 
 ## Requirements
 
-- iPadOS 27.0+ (also runs on Mac and Apple Vision as "Designed for iPad")
+- iOS / iPadOS 27.0+ (iPhone, iPad, and iPhone Duo; also runs on Mac and Apple Vision as "Designed for iPad")
 - Xcode 27 beta (iOS 27 SDK)
 - Apple Developer account (for CloudKit capabilities)
 
@@ -69,7 +69,7 @@ One-time purchase, shared with your family via Family Sharing. Unlocks:
 2. **Open `Waffle.xcworkspace`** (not the bare `.xcodeproj`) — it resolves the local Swift package
 3. Configure signing with your Apple Developer account
 4. Update the bundle identifier and iCloud container identifier
-5. Build and run on an iPad simulator or device
+5. Build and run on an iPhone or iPad simulator or device
 
 ### Required Capabilities
 
@@ -164,4 +164,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Author
 
-Molargik Software LLC
+[Farside Software LLC](https://farsidesoftware.com)

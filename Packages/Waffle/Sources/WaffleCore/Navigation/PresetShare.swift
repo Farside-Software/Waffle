@@ -12,7 +12,7 @@ import Foundation
 
 nonisolated public enum PresetShare {
     /// Where someone without Waffle can get it; `ct` attributes installs to shared layouts.
-    public static let getWaffleLink = "https://molargiksoftware.com/go/waffle?ct=share_layout"
+    public static let getWaffleLink = Company.page("/go/waffle?ct=share_layout").absoluteString
 
     /// Share text for a preset's name, layout and URLs.
     public static func text(name: String, id: UUID, rows: Int, cols: Int, urls: [String]) -> String {
