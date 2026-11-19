@@ -16,8 +16,12 @@ struct OnboardingPageView: View {
     let page: OnboardingPage
     let probe: LayoutProbe
     let size: CGSize
+    /// Wide layout only: the page dots and the Continue button, placed in the text column.
+    var indicator: AnyView?
+    var footer: AnyView?
 
-    private var isWide: Bool { size.width >= 640 && size.height < size.width * 0.8 }
+    static func isWide(_ size: CGSize) -> Bool { size.width >= 640 && size.height < size.width * 0.8 }
+    private var isWide: Bool { Self.isWide(size) }
 
     var body: some View {
         if isWide {
@@ -51,35 +55,46 @@ struct OnboardingPageView: View {
         .frame(maxWidth: .infinity)
     }
 
-    /// Text and rows on one side, the miniature on the other. A fold keeps both off the hinge.
+    /// Text and rows on one side, the miniature on the other. A fold keeps both off the hinge;
+    /// the dots and Continue belong to the text column, and both columns centre vertically.
     private var wide: some View {
         let gutter: CGFloat = 28
         let hinge = probe.foldCenterX ?? size.width / 2
         let leftWidth = max(0, hinge - gutter - 28)
         let rightWidth = max(0, size.width - hinge - gutter - 28)
         return HStack(spacing: 0) {
-            ScrollView {
-                VStack(spacing: 18) {
-                    OnboardingPageHeader(page: page, compact: true)
-                    if !page.features.isEmpty { featureCard(compact: true) }
-                    footnote
+            VStack(spacing: 0) {
+                indicator
+                    .padding(.top, 4)
+                    .padding(.bottom, 8)
+                GeometryReader { column in
+                    ScrollView {
+                        VStack(spacing: 18) {
+                            OnboardingPageHeader(page: page, compact: true)
+                            if !page.features.isEmpty { featureCard(compact: true) }
+                            footnote
+                        }
+                        .padding(.vertical, 8)
+                        .frame(maxWidth: 460)
+                        .frame(maxWidth: .infinity, minHeight: column.size.height)
+                    }
+                    .scrollBounceBehavior(.basedOnSize)
                 }
-                .padding(.vertical, 8)
-                .frame(maxWidth: 460)
-                .frame(maxWidth: .infinity)
+                footer
             }
-            .scrollBounceBehavior(.basedOnSize)
             .frame(width: leftWidth)
             .padding(.leading, 28)
             .padding(.trailing, gutter)
 
-            ScrollView {
-                demo(compact: false)
-                    .frame(maxWidth: 460)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+            GeometryReader { column in
+                ScrollView {
+                    demo(compact: false)
+                        .frame(maxWidth: 460)
+                        .frame(maxWidth: .infinity, minHeight: column.size.height)
+                        .padding(.vertical, 8)
+                }
+                .scrollBounceBehavior(.basedOnSize)
             }
-            .scrollBounceBehavior(.basedOnSize)
             .frame(width: rightWidth)
             .padding(.leading, gutter)
             .padding(.trailing, 28)

@@ -60,19 +60,35 @@ public struct OnboardingView: View {
         NavigationStack {
             ZStack {
                 OnboardingStyle.background.ignoresSafeArea()
-                VStack(spacing: 0) {
-                    pageIndicator
-                        .padding(.top, 4)
-                        .padding(.bottom, 8)
-                    GeometryReader { proxy in
-                        OnboardingPageView(page: pages[pageIndex], probe: LayoutProbe(proxy), size: proxy.size)
-                            .id(pageIndex)
-                            .transition(pageTransition)
-                            .frame(width: proxy.size.width, height: proxy.size.height)
-                            .clipped()
-                            .simultaneousGesture(swipe)
+                GeometryReader { proxy in
+                    if OnboardingPageView.isWide(proxy.size) {
+                        // Wide and short (iPad landscape, the unfolded Duo): the page owns the
+                        // dots and Continue so they sit in the text column, off the hinge.
+                        OnboardingPageView(
+                            page: pages[pageIndex], probe: LayoutProbe(proxy), size: proxy.size,
+                            indicator: AnyView(pageIndicator), footer: AnyView(continueButton(inColumn: true))
+                        )
+                        .id(pageIndex)
+                        .transition(pageTransition)
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .clipped()
+                        .simultaneousGesture(swipe)
+                    } else {
+                        VStack(spacing: 0) {
+                            pageIndicator
+                                .padding(.top, 4)
+                                .padding(.bottom, 8)
+                            GeometryReader { inner in
+                                OnboardingPageView(page: pages[pageIndex], probe: LayoutProbe(inner), size: inner.size)
+                                    .id(pageIndex)
+                                    .transition(pageTransition)
+                                    .frame(width: inner.size.width, height: inner.size.height)
+                                    .clipped()
+                                    .simultaneousGesture(swipe)
+                            }
+                            continueButton(inColumn: false)
+                        }
                     }
-                    continueButton
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -107,7 +123,7 @@ public struct OnboardingView: View {
         .accessibilityLabel(Text("Page \(pageIndex + 1) of \(pages.count)"))
     }
 
-    private var continueButton: some View {
+    private func continueButton(inColumn: Bool) -> some View {
         Button {
             if isLast { finish() } else { go(1) }
         } label: {
@@ -121,8 +137,8 @@ public struct OnboardingView: View {
         .onboardingPrimaryButton()
         .keyboardShortcut(.defaultAction)
         .accessibilityIdentifier("continueButton")
-        .frame(maxWidth: OnboardingStyle.readableWidth)
-        .padding(.horizontal, 24)
+        .frame(maxWidth: inColumn ? 460 : OnboardingStyle.readableWidth)
+        .padding(.horizontal, inColumn ? 0 : 24)
         .padding(.top, 10)
         .padding(.bottom, 16)
     }

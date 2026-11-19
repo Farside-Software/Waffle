@@ -24,6 +24,7 @@ struct OnboardingSplash: View {
     @State private var rows: [CGFloat] = OnboardingSplash.hasPlayedEntrance ? [1, 1, 1] : [0, 0, 0]
     @State private var butter: CGFloat = OnboardingSplash.hasPlayedEntrance ? 1 : 0
     @State private var showsText = OnboardingSplash.hasPlayedEntrance
+    @State private var settled = false
     @State private var showsButton = OnboardingSplash.hasPlayedEntrance
 
     /// The launch storyboard's sizes: 160 pt, 200 pt in regular width.
@@ -34,9 +35,13 @@ struct OnboardingSplash: View {
             OnboardingStyle.background.ignoresSafeArea()
 
             GeometryReader { proxy in
+                // Unfolded Duo: the content moves to the middle of the left half, so neither the
+                // mark, the text nor Get Started sits on the hinge. (The launch screen starts at
+                // the true centre; the move is eased.)
+                let centerX = settled ? (leftHalfCenter(proxy) ?? proxy.size.width / 2) : proxy.size.width / 2
                 WaffleMark(bodyProgress: body0, rowProgress: rows, butterProgress: butter)
                     .frame(width: side, height: side)
-                    .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
+                    .position(x: centerX, y: proxy.size.height / 2 - lift(proxy))
 
                 VStack(spacing: 10) {
                     Text("Waffle")
@@ -51,14 +56,15 @@ struct OnboardingSplash: View {
                 .padding(.horizontal, 32)
                 .frame(maxWidth: 520)
                 .frame(maxWidth: .infinity)
-                .position(x: proxy.size.width / 2, y: proxy.size.height / 2 + side / 2 + 70)
+                .frame(width: min(520, columnWidth(proxy)))
+                .position(x: centerX, y: proxy.size.height / 2 - lift(proxy) + side / 2 + 70)
                 .opacity(showsText ? 1 : 0)
                 .offset(y: showsText ? 0 : 10)
             }
             .ignoresSafeArea()
 
-            VStack {
-                Spacer()
+            GeometryReader { proxy in
+                let centerX = settled ? (leftHalfCenter(proxy) ?? proxy.size.width / 2) : proxy.size.width / 2
                 Button(action: onContinue) {
                     HStack(spacing: 8) {
                         Text("Get Started")
@@ -70,18 +76,31 @@ struct OnboardingSplash: View {
                 .onboardingPrimaryButton()
                 .keyboardShortcut(.defaultAction)
                 .accessibilityIdentifier("continueButton")
+                .frame(width: min(520, columnWidth(proxy)) - 64)
                 .opacity(showsButton ? 1 : 0)
                 .offset(y: showsButton ? 0 : 10)
+                .position(x: centerX, y: proxy.size.height - 32 - 26)
             }
-            .padding(.horizontal, 32)
-            .padding(.bottom, 32)
-            .frame(maxWidth: 520)
-            .frame(maxWidth: .infinity)
         }
         .onAppear(perform: runEntrance)
     }
 
+    /// Centre of the half left of a vertical fold, in the geometry's space; nil without one.
+    private func leftHalfCenter(_ proxy: GeometryProxy) -> CGFloat? {
+        proxy.foldCenterXIfAvailable.map { $0 / 2 }
+    }
+
+    /// On the fold the content rides a little higher, clear of the pinned button.
+    private func lift(_ proxy: GeometryProxy) -> CGFloat {
+        settled && proxy.foldCenterXIfAvailable != nil ? 36 : 0
+    }
+
+    private func columnWidth(_ proxy: GeometryProxy) -> CGFloat {
+        proxy.foldCenterXIfAvailable ?? proxy.size.width
+    }
+
     private func runEntrance() {
+        withAnimation(.easeInOut(duration: 0.5).delay(0.2)) { settled = true }
         guard !Self.hasPlayedEntrance else { return }
         Self.hasPlayedEntrance = true
         guard !reduceMotion else {
