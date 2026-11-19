@@ -207,6 +207,13 @@ public struct PhoneMainView: View {
             switch defaults.string(forKey: "WaffleDebugSheet") {
             case "layouts": showLayoutsSheet = true
             case "settings": showSettingsSheet = true
+            case "settingsThenDone":
+                // Opens Settings, then dismisses it the way Done does: the panes must survive.
+                showSettingsSheet = true
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(3000))
+                    showSettingsSheet = false
+                }
             case "settingsSyrup":
                 showSettingsSheet = true
                 Task { @MainActor in
@@ -798,7 +805,9 @@ public struct PhoneMainView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(String(localized: "Done")) { showLayoutsSheet = false }
+                    Button { showLayoutsSheet = false } label: {
+                        Label("Done", systemImage: "checkmark").labelStyle(.titleAndIcon)
+                    }
                 }
             }
         }

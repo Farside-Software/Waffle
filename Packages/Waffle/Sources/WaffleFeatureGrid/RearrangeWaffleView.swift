@@ -72,9 +72,11 @@ public struct RearrangeWaffleView: View {
             .background(Color(uiColor: .systemGroupedBackground))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(String(localized: "Cancel")) {
+                    Button {
                         onCancel()
                         dismiss()
+                    } label: {
+                        Label("Cancel", systemImage: "xmark").labelStyle(.titleAndIcon)
                     }
                 }
                 ToolbarItem(placement: .principal) {
@@ -89,9 +91,11 @@ public struct RearrangeWaffleView: View {
                     .accessibilityHint(Text("Restores the original order"))
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(String(localized: "Save")) {
+                    Button {
                         onSave(cells.map(\.url))
                         dismiss()
+                    } label: {
+                        Label("Save", systemImage: "checkmark").labelStyle(.titleAndIcon)
                     }
                     .fontWeight(.semibold)
                     .disabled(!hasChanges)
