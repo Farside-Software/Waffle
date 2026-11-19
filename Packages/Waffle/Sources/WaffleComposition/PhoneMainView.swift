@@ -307,13 +307,8 @@ public struct PhoneMainView: View {
         #if DEBUG
         if UserDefaults.standard.bool(forKey: "WaffleDebugFoldable") { return true }
         #endif
-        var info = utsname()
-        uname(&info)
-        let machine = withUnsafeBytes(of: &info.machine) { raw in
-            String(decoding: raw.prefix(while: { $0 != 0 }), as: UTF8.self)
-        }
-        let identifier = ProcessInfo.processInfo.environment["SIMULATOR_MODEL_IDENTIFIER"] ?? machine
-        return FoldableDevice.isFoldable(modelIdentifier: identifier)
+        // The one Duo check lives in the design system (`PhoneDuo`).
+        return PhoneDuo.isDuo
     }
 
     private func controlBar(width: CGFloat) -> some View {
