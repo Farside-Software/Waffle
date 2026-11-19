@@ -27,7 +27,7 @@ struct PresetsListView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Label("Syrup Required", systemImage: "drop.fill")
                             .font(.headline)
-                            .tint(.waffleTertiary)
+                            .symbolRenderingMode(.hierarchical)
 
                         Text("Presets are part of Syrup. To apply, update, or manage presets you'll need Syrup.")
                             .font(.subheadline)
