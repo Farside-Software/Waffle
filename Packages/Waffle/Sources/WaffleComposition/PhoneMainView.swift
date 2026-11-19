@@ -125,10 +125,10 @@ public struct PhoneMainView: View {
             // controls are a column in the trailing strip and the panes run to the edges.
             let toolbar = Self.isFoldableDevice && !laptopPose
             // Portrait on the unfolded Duo has a status band across the top, but the status items
-            // only occupy the trailing column: the panes run to the top edge and the strip is
-            // wide enough to hold the status above the toolbar.
+            // only occupy the top of the trailing corner: the panes run to the top edge, and only
+            // a pane in the trailing column starts below the status.
             let statusInStrip = toolbar && inset.top >= 40
-            let stripWidth = max(inset.trailing, statusInStrip ? Self.portraitStripWidth : PhoneScreenLayout.toolbarStripWidth)
+            let stripWidth = max(inset.trailing, PhoneScreenLayout.toolbarStripWidth)
             let layout = PhoneScreenLayout.compute(
                 size: screenSize,
                 safe: (inset.top, inset.leading, toolbar ? 0 : (mode == .inner && !isEditingAddress ? max(inset.bottom - Self.innerBottomGive, 0) : inset.bottom), inset.trailing),
@@ -149,6 +149,7 @@ public struct PhoneMainView: View {
                     fold: layout.fold,
                     focusedPaneID: focusedPaneID,
                     leadingDisplayCorners: toolbar ? (Self.displayCornerTop, Self.displayCornerBottom) : nil,
+                    trailingTopInset: statusInStrip ? inset.top : 0,
                     onAddPane: { session.addPane(mode: mode, isFoldable: Self.isFoldableDevice) }
                 )
                 .environment(\.duoPanelDense, mode == .inner)
@@ -629,8 +630,6 @@ public struct PhoneMainView: View {
     static let displayCornerBottom: CGFloat = 38
     /// The system draws the clock and status at the top of the trailing strip.
     static let toolbarTopClearance: CGFloat = 112
-    /// Portrait: wide enough that the clock and status sit wholly above the toolbar column.
-    static let portraitStripWidth: CGFloat = 136
 
     static var isFoldableDevice: Bool {
         #if DEBUG

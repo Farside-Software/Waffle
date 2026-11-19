@@ -27,6 +27,9 @@ public struct PaneWorkspaceView: View {
     /// display's edge) use these radii for those corners, so the pane follows the display's
     /// rounded corner instead of being clipped by it: (top, bottom).
     var leadingDisplayCorners: (top: CGFloat, bottom: CGFloat)?
+    /// Portrait Duo: the system's status items sit over the top of the trailing column, so a
+    /// pane touching both the top and the trailing edge starts this far down.
+    var trailingTopInset: CGFloat = 0
     /// Starts another pane (the empty-pane card offers it while only one is open).
     var onAddPane: (() -> Void)?
 
@@ -39,9 +42,11 @@ public struct PaneWorkspaceView: View {
         focusedPaneID: UUID? = nil,
         cornerRadius: CGFloat = 14,
         leadingDisplayCorners: (top: CGFloat, bottom: CGFloat)? = nil,
+        trailingTopInset: CGFloat = 0,
         onAddPane: (() -> Void)? = nil
     ) {
         self.leadingDisplayCorners = leadingDisplayCorners
+        self.trailingTopInset = trailingTopInset
         self.model = model
         self.primaryIsHorizontal = primaryIsHorizontal
         self.fold = fold
@@ -66,7 +71,7 @@ public struct PaneWorkspaceView: View {
                 ForEach(Array(panes.enumerated()), id: \.element.id) { index, cell in
                     let isFocused = focusedPaneID == cell.id
                     let isHidden = focusedPaneID != nil && !isFocused
-                    let frame = focusedPaneID != nil ? full : (index < frames.panes.count ? frames.panes[index] : full)
+                    let frame = belowStatus(focusedPaneID != nil ? full : (index < frames.panes.count ? frames.panes[index] : full), in: full)
 
                     WaffleCellContainer(
                         waffleCell: cell,
@@ -121,6 +126,11 @@ public struct PaneWorkspaceView: View {
             bottomLeading: frame.maxY >= full.maxY - 0.5 ? max(corners.bottom, r) : r,
             bottomTrailing: r, topTrailing: r
         )
+    }
+
+    private func belowStatus(_ frame: CGRect, in full: CGRect) -> CGRect {
+        guard trailingTopInset > 0, frame.minY <= full.minY + 0.5, frame.maxX >= full.maxX - 0.5 else { return frame }
+        return CGRect(x: frame.minX, y: frame.minY + trailingTopInset, width: frame.width, height: max(frame.height - trailingTopInset, 1))
     }
 
     // MARK: - Divider editing

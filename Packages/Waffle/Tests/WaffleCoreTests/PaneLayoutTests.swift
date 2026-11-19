@@ -302,10 +302,10 @@ struct PhoneScreenLayoutTests {
         #expect(layout.workspace.maxX <= 951 - PhoneScreenLayout.toolbarStripWidth)
     }
 
-    @Test func portraitToolbarIgnoresTheStatusBandAndWidensTheStrip() {
-        let layout = PhoneScreenLayout.compute(size: CGSize(width: 669, height: 951), safe: (80, 0, 35, 84), fold: nil, mode: .inner, deskMode: false, trailingToolbar: true, stripWidth: 136, ignoreTopSafeArea: true)
+    @Test func portraitToolbarIgnoresTheStatusBand() {
+        let layout = PhoneScreenLayout.compute(size: CGSize(width: 669, height: 951), safe: (80, 0, 35, 84), fold: nil, mode: .inner, deskMode: false, trailingToolbar: true, ignoreTopSafeArea: true)
         #expect(layout.workspace.minY == 0)
-        #expect(layout.workspace.maxX <= 669 - 136)
+        #expect(layout.workspace.maxX <= 669 - PhoneScreenLayout.toolbarStripWidth)
         #expect(!layout.primaryIsHorizontal)
     }
 
