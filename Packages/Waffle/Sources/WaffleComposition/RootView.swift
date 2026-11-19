@@ -134,13 +134,12 @@ private struct ExtraWindowView: View {
             Button(String(localized: "Close Window"), systemImage: "xmark.circle.fill") {
                 dismissWindow()
             }
-            .buttonStyle(.borderedProminent)
-            .tint(Color.waffleTertiary)
+            .buttonStyle(.wafflePrimary)
             .accessibilityHint(Text("Closes this extra window"))
         }
         .padding(40)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.wafflePrimary.opacity(0.3))
+        .background(Color(uiColor: .systemGroupedBackground))
     }
 }
 #endif

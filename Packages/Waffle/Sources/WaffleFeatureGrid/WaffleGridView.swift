@@ -8,6 +8,7 @@
 
 #if os(iOS)
 import SwiftUI
+import UIKit
 import WebKit
 import WaffleCore
 import WaffleDesignSystem
@@ -266,12 +267,8 @@ private struct PoppedOutPlaceholder: View {
 
     var body: some View {
         ZStack {
-            // Warm gradient background matching EmptyCellView
-            LinearGradient(
-                colors: [Color.wafflePrimary, Color.waffleSecondary],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            // Same calm surface as EmptyCellView.
+            Color(uiColor: .systemGroupedBackground)
 
             ViewThatFits(in: .vertical) {
                 // Full version
@@ -285,15 +282,13 @@ private struct PoppedOutPlaceholder: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
-                        .padding()
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+
 
                     popBackButton
                         .fontWeight(.semibold)
                 }
                 .padding(24)
-                .background(.thickMaterial, in: RoundedRectangle(cornerRadius: 20))
-                .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
+                .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .padding(40)
 
                 // Compact version
@@ -308,8 +303,7 @@ private struct PoppedOutPlaceholder: View {
                         .fontWeight(.semibold)
                 }
                 .padding(16)
-                .background(.thickMaterial, in: RoundedRectangle(cornerRadius: 16))
-                .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+                .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .padding(20)
 
                 // Minimal version
@@ -328,8 +322,7 @@ private struct PoppedOutPlaceholder: View {
         } label: {
             Label(String(localized: "Pop Back"), systemImage: "arrow.down.backward")
         }
-        .buttonStyle(.borderedProminent)
-        .tint(Color.waffleTertiary)
+        .buttonStyle(.wafflePrimary)
         .accessibilityHint(Text("Returns the cell to the grid"))
     }
 }

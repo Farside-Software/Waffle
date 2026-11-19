@@ -78,9 +78,7 @@ public struct SyrupView: View {
                 }
                 .labelStyle(AlignedIconLabelStyle(iconSize: 22, iconWidth: 40, iconColor: .secondary))
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .background(.ultraThinMaterial)
-                .cornerRadius(12)
+                .waffleCard()
             }
 
             if let price = store.product?.displayPrice {
@@ -173,23 +171,25 @@ public struct SyrupView: View {
                     VStack(spacing: 0) {
                         Spacer(minLength: 0)
 
-                        Image(systemName: "drop.fill")
-                            .font(.system(size: 44))
-                            // Dark brown vanishes on a dark sheet: the brand gold there.
-                            .foregroundStyle(colorScheme == .dark ? Color.wafflePrimary : Color.waffleTertiary)
+                        // Drop and name share a line: the pitch is shorter than it was, so on the
+                        // unfolded Duo's side panel the "Always free" card is not cut off.
+                        HStack(spacing: 10) {
+                            Image(systemName: "drop.fill")
+                                .font(.system(size: 34))
+                                // Dark brown vanishes on a dark sheet: the brand gold there.
+                                .foregroundStyle(colorScheme == .dark ? Color.wafflePrimary : Color.waffleTertiary)
+                                .accessibilityHidden(true)
+                            Text(verbatim: "Syrup")
+                                .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                        }
 
-                        Spacer(minLength: 8)
-
-                        Text(verbatim: "Syrup")
-                            .font(.largeTitle).bold()
-
-                        Spacer(minLength: 16)
+                        Spacer(minLength: 12)
 
                         Text(Self.lead(for: pitch.trigger))
                             .font(.headline)
                             .multilineTextAlignment(.center)
 
-                        Spacer(minLength: 16)
+                        Spacer(minLength: 12)
 
                         phoneFeatures(pitch)
 
@@ -206,6 +206,7 @@ public struct SyrupView: View {
                     .frame(minHeight: viewport.size.height)
                 }
                 .scrollBounceBehavior(.basedOnSize)
+                .scrollIndicators(.visible)
             }
 
             VStack(spacing: 10) {
@@ -255,9 +256,7 @@ public struct SyrupView: View {
             }
             .labelStyle(AlignedIconLabelStyle(iconSize: 22, iconWidth: 40, iconColor: .secondary))
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-            .background(.ultraThinMaterial)
-            .cornerRadius(12)
+            .waffleCard()
 
             // What else the purchase covers, on the other devices.
             Group {
@@ -277,9 +276,7 @@ public struct SyrupView: View {
                 .foregroundStyle(.secondary)
                 .labelStyle(AlignedIconLabelStyle(iconSize: 22, iconWidth: 40, iconColor: .secondary))
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .background(.ultraThinMaterial)
-                .cornerRadius(12)
+                .waffleCard()
         }
     }
 

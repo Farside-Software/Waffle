@@ -37,6 +37,8 @@ public struct PhoneMainView: View {
     @AppStorage("searchProvider") private var searchProviderRawValue: String = SearchProvider.google.rawValue
 
     @State private var showSettingsSheet = false
+    /// Syrup opened from inside Settings (which is itself presented, so the sheet lives there).
+    @State private var showSyrupOverSettings = false
     @State private var showLayoutsSheet = false
     /// The user maximized the selected pane.
     @State private var isMaximized = false
@@ -205,6 +207,12 @@ public struct PhoneMainView: View {
             switch defaults.string(forKey: "WaffleDebugSheet") {
             case "layouts": showLayoutsSheet = true
             case "settings": showSettingsSheet = true
+            case "settingsSyrup":
+                showSettingsSheet = true
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(2500))
+                    showSyrupOverSettings = true
+                }
             case "paywallDeskMode": session.requestSyrup(for: .deskMode)
             case "paywallGeneral": session.requestSyrup()
             default: break
@@ -252,7 +260,9 @@ public struct PhoneMainView: View {
             SettingsView(
                 model: session.makeSettingsModel(),
                 isSyrupEnabled: session.isSyrupEnabled,
-                requestSyrup: { self.session.requestSyrup() },
+                // Settings is itself a sheet or full-page cover, and a view cannot present a
+                // second one over it from underneath: Syrup opens from inside Settings.
+                requestSyrup: { self.showSyrupOverSettings = true },
                 openInApp: { grid.loadInSelectedCell($0) },
                 usesPaneWording: true,
                 restorePurchases: { await self.session.store.restore() },
@@ -266,6 +276,32 @@ public struct PhoneMainView: View {
                     listTitles: grid.contentBlocking.listTitles
                 )
             )
+            .sheet(isPresented: Binding(
+                get: { showSyrupOverSettings && !settingsIsFullPage },
+                set: { showSyrupOverSettings = $0 }
+            )) { settingsSyrup }
+            .overlay {
+                if showSyrupOverSettings && settingsIsFullPage {
+                    // The unfolded Duo's full page: Syrup is a card in the right half, clear of
+                    // the hinge, over a dimmed page.
+                    GeometryReader { proxy in
+                        let fold = proxy.foldCenterXIfAvailable ?? proxy.size.width / 2
+                        ZStack(alignment: .topLeading) {
+                            Color.black.opacity(0.25)
+                                .ignoresSafeArea()
+                                .onTapGesture { showSyrupOverSettings = false }
+                            settingsSyrup
+                                .frame(width: max(0, proxy.size.width - fold - 28 - 12), height: max(0, proxy.size.height - 24))
+                                .background(Color(.systemBackground))
+                                .clipShape(.rect(cornerRadius: 20, style: .continuous))
+                                .shadow(color: .black.opacity(0.18), radius: 12, y: 4)
+                                .offset(x: fold + 28, y: 12)
+                        }
+                    }
+                    .transition(.opacity)
+                }
+            }
+            .animation(.snappy, value: showSyrupOverSettings)
         }
         .sheet(isPresented: Binding(
             get: { showLayoutsSheet && !usesSidePanel },
@@ -297,6 +333,20 @@ public struct PhoneMainView: View {
     }
 
     // MARK: - Unfolded Duo geometry
+
+    private var settingsIsFullPage: Bool { mode == .inner && Self.isFoldableDevice }
+
+    private var settingsSyrup: some View {
+        SyrupView(
+            store: session.store,
+            phonePitch: SyrupPitch(
+                trigger: .general,
+                device: mode == .inner ? .iPhoneDuoInner : (Self.isFoldableDevice ? .iPhoneDuoOuter : .iPhone)
+            ),
+            onPurchased: { self.showSyrupOverSettings = false },
+            onClose: { self.showSyrupOverSettings = false }
+        )
+    }
 
     private var syrupSheet: some View {
         SyrupView(

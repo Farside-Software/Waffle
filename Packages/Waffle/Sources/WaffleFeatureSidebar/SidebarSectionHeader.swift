@@ -12,21 +12,16 @@ import WaffleDesignSystem
 struct SidebarSectionHeader: View {
     let title: LocalizedStringKey
     let icon: String
-    let iconGradient: [Color]
     let primaryAction: (label: LocalizedStringKey, icon: String, action: () -> Void)
     let secondaryAction: (label: LocalizedStringKey, icon: String, action: () -> Void)
 
     var body: some View {
         HStack {
             Group {
-                Image(systemName: icon)
-                    .foregroundStyle(LinearGradient(colors: iconGradient, startPoint: .top, endPoint: .bottom))
-                    .frame(width: 40)
+                WaffleSymbolTile(systemImage: icon, side: 40)
                 Text(title)
             }
-            .fontWeight(.semibold)
-            .font(.title2)
-            .bold()
+            .font(.system(.title2, design: .rounded, weight: .bold))
 
             Spacer()
 
@@ -34,17 +29,10 @@ struct SidebarSectionHeader: View {
                 Button(primaryAction.label, systemImage: primaryAction.icon) { primaryAction.action() }
                 Button(secondaryAction.label, systemImage: secondaryAction.icon) { secondaryAction.action() }
             } label: {
-                HStack {
-                    Image(systemName: "plus")
-                    Text("New")
-                }
-                .bold()
-                .padding(10)
-                .foregroundStyle(Color.primary)
-                .glassEffect(.regular.interactive())
+                Label("New", systemImage: "plus")
             }
-            .menuStyle(.borderlessButton)
-            .buttonStyle(.glass)
+            .menuStyle(.button)
+            .buttonStyle(.waffleSecondary)
         }
         .padding(10)
         .padding(.horizontal, 10)
@@ -59,7 +47,6 @@ struct BookmarksHeaderView: View {
         SidebarSectionHeader(
             title: "Bookmarks",
             icon: "bookmark.fill",
-            iconGradient: [Color.wafflePrimary, Color.waffleSecondary],
             primaryAction: (label: "Save As…", icon: "square.and.pencil", action: onSaveAs),
             secondaryAction: (label: "Quick Save", icon: "square.and.arrow.down.fill", action: onQuickSaveCurrent)
         )
@@ -74,7 +61,6 @@ struct PresetsHeaderView: View {
         SidebarSectionHeader(
             title: "Presets",
             icon: "square.grid.3x3.fill",
-            iconGradient: [Color.wafflePrimary, Color.waffleSecondary],
             primaryAction: (label: "Quick Save", icon: "square.and.arrow.down.fill", action: onQuickSave),
             secondaryAction: (label: "Save As…", icon: "square.and.pencil", action: onSaveAs)
         )

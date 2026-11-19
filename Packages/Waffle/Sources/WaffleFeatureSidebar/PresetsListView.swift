@@ -47,12 +47,7 @@ struct PresetsListView: View {
                     }
                     .padding(.vertical, 6)
                 }
-                .padding()
-                .background {
-                    Rectangle()
-                        .foregroundStyle(.thickMaterial)
-                        .cornerRadius(20)
-                }
+                .waffleCard()
             } else if presets.isEmpty {
                 Section {
                     VStack(spacing: 10) {
@@ -95,11 +90,7 @@ struct PresetsListView: View {
                             .font(.caption)
                             .padding(.vertical, 8)
                             .padding(.horizontal)
-                            .background {
-                                Rectangle()
-                                    .foregroundStyle(.waffleSecondary)
-                                    .cornerRadius(20)
-                            }
+                            .background(Color.waffleSecondary.opacity(0.28), in: Capsule())
                         }
                         Spacer()
                         Image(systemName: "arrow.right")
