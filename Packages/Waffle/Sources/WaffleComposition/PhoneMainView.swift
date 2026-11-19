@@ -234,7 +234,7 @@ public struct PhoneMainView: View {
                 onClose: { self.session.presentSyrupSheet = false }
             )
         }
-        .sheet(isPresented: $showSettingsSheet) {
+        .settingsPresentation(isPresented: $showSettingsSheet, fullPage: mode == .inner && Self.isFoldableDevice) {
             SettingsView(
                 model: session.makeSettingsModel(),
                 isSyrupEnabled: session.isSyrupEnabled,
