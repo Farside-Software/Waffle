@@ -84,6 +84,9 @@ struct PhoneLayoutsView: View {
                 }
             }
         }
+        // The floating search field sits over the bottom of the list: leave room so the last
+        // row can scroll clear of it.
+        .contentMargins(.bottom, dense ? 72 : 64, for: .scrollContent)
     }
 
     // MARK: - Headers

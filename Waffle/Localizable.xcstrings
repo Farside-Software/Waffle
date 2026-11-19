@@ -1883,30 +1883,6 @@
       },
       "shouldGenerateSymbol": false
     },
-    "Create and update Preset waffles": {
-      "extractionState": "manual",
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Crea y actualiza waffles de preajuste"
-          }
-        },
-        "fr-CA": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Créez et mettez à jour des waffles préréglés"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "プリセットのワッフルを作成・更新"
-          }
-        }
-      },
-      "shouldGenerateSymbol": false
-    },
     "Credits": {
       "extractionState": "manual",
       "localizations": {
@@ -6191,30 +6167,6 @@
       },
       "shouldGenerateSymbol": false
     },
-    "Rearrange waffles": {
-      "extractionState": "manual",
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reorganiza los waffles"
-          }
-        },
-        "fr-CA": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Réorganisez les waffles"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ワッフルを並べ替え"
-          }
-        }
-      },
-      "shouldGenerateSymbol": false
-    },
     "Rearrangeable grid": {
       "extractionState": "manual",
       "localizations": {
@@ -9720,30 +9672,6 @@
       },
       "shouldGenerateSymbol": false
     },
-    "Up to %lldx%lld waffles (double the %lldx%lld limit)": {
-      "extractionState": "manual",
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Waffles de hasta %lldx%lld (el doble del límite de %lldx%lld)"
-          }
-        },
-        "fr-CA": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Des waffles jusqu'à %lldx%lld (le double de la limite de %lldx%lld)"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "最大%lldx%lldのワッフル（上限%lldx%lldの2倍）"
-          }
-        }
-      },
-      "shouldGenerateSymbol": false
-    },
     "Update": {
       "extractionState": "manual",
       "localizations": {
@@ -10598,6 +10526,222 @@
           "stringUnit": {
             "state": "translated",
             "value": "接続とアドレスを確認して、もう一度お試しください。"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Address": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dirección"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adresse"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アドレス"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Go": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ir"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aller"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移動"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Edit the address": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edita la dirección"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier l'adresse"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アドレスを編集"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Up to %lldx%lld cells (double the %lldx%lld limit)": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Celdas de hasta %lldx%lld (el doble del límite de %lldx%lld)"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Des cellules jusqu'à %lldx%lld (le double de la limite de %lldx%lld)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最大%lldx%lldのセル（上限%lldx%lldの2倍）"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Rearrange cells": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reorganiza las celdas"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réorganisez les cellules"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "セルを並べ替え"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Create and update Presets": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crea y actualiza preajustes"
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créez et mettez à jour des préréglages"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プリセットを作成・更新"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Waffle stacks live pages in panes. Tap a pane, then use the toolbar along the edge.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffle apila páginas en vivo en paneles. Toca un panel y usa la barra del borde."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffle empile des pages en direct dans des volets. Touchez un volet, puis utilisez la barre d'outils sur le bord."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waffleはライブページをペインに重ねて表示します。ペインをタップして、端のツールバーを使います。"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "The toolbar controls the selected pane.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La barra controla el panel seleccionado."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La barre d'outils commande le volet sélectionné."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ツールバーで選択中のペインを操作します。"
+          }
+        }
+      },
+      "shouldGenerateSymbol": false
+    },
+    "Tap the address, type, and anything that is not a web address becomes a search.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toca la dirección y escribe: todo lo que no sea una dirección web se convierte en una búsqueda."
+          }
+        },
+        "fr-CA": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touchez l'adresse et saisissez : tout ce qui n'est pas une adresse web devient une recherche."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アドレスをタップして入力します。Webアドレス以外は検索になります。"
           }
         }
       },

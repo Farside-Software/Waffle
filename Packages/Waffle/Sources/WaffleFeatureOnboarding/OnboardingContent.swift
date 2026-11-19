@@ -65,7 +65,7 @@ struct OnboardingPage: Identifiable {
         switch variant {
         case .iPad: [grid, shape, library, ipadSyrup]
         case .iPhone: [panes, size, layouts, phoneSyrup(isDuo: false)]
-        case .iPhoneDuo: [panes, size, layouts, unfold, phoneSyrup(isDuo: true)]
+        case .iPhoneDuo: [panesDuo, size, layouts, unfold, phoneSyrup(isDuo: true)]
         }
     }
 
@@ -130,6 +130,19 @@ struct OnboardingPage: Identifiable {
         features: [
             .init(systemImage: "hand.tap", title: "Tap a pane", detail: "The bar at the bottom controls the selected pane."),
             .init(systemImage: "keyboard", title: "Type an address or a search", detail: "Anything that is not a web address becomes a search."),
+            .init(systemImage: "ellipsis", title: "The ••• menu", detail: "It adds panes, opens layouts and bookmarks, and Settings."),
+        ]
+    )
+
+    /// iPhone Duo: the controls are a toolbar along the display's edge, not a bar below the panes.
+    static let panesDuo = OnboardingPage(
+        kind: .panes,
+        systemImage: "rectangle.split.1x2",
+        title: "Two pages, one screen",
+        subtitle: "Waffle stacks live pages in panes. Tap a pane, then use the toolbar along the edge.",
+        features: [
+            .init(systemImage: "hand.tap", title: "Tap a pane", detail: "The toolbar controls the selected pane."),
+            .init(systemImage: "keyboard", title: "Type an address or a search", detail: "Tap the address, type, and anything that is not a web address becomes a search."),
             .init(systemImage: "ellipsis", title: "The ••• menu", detail: "It adds panes, opens layouts and bookmarks, and Settings."),
         ]
     )

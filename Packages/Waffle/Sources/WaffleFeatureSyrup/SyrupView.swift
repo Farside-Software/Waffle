@@ -70,11 +70,11 @@ public struct SyrupView: View {
                     .foregroundStyle(.secondary)
 
                 VStack(alignment: .leading, spacing: 10) {
-                    Label("Up to \(AppConfiguration.maxPremiumRows)x\(AppConfiguration.maxPremiumCols) waffles (double the \(AppConfiguration.maxFreeRows)x\(AppConfiguration.maxFreeCols) limit)", systemImage: "square.grid.3x3")
-                    Label("Rearrange waffles", systemImage: "arrow.left.arrow.right.square")
+                    Label("Up to \(AppConfiguration.maxPremiumRows)x\(AppConfiguration.maxPremiumCols) cells (double the \(AppConfiguration.maxFreeRows)x\(AppConfiguration.maxFreeCols) limit)", systemImage: "square.grid.3x3")
+                    Label("Rearrange cells", systemImage: "arrow.left.arrow.right.square")
                     Label("Pop out cells into their own windows", systemImage: "rectangle.on.rectangle")
                     Label("Fullscreen a single cell", systemImage: "arrow.up.left.and.arrow.down.right.rectangle")
-                    Label("Create and update Preset waffles", systemImage: "square.and.arrow.down")
+                    Label("Create and update Presets", systemImage: "square.and.arrow.down")
                     Label("Syrup is shared for free with your whole family", systemImage: "person.2")
                 }
                 .labelStyle(AlignedIconLabelStyle(iconSize: 22, iconWidth: 40, iconColor: .secondary))

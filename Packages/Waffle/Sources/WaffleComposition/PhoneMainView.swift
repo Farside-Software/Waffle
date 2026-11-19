@@ -126,7 +126,7 @@ public struct PhoneMainView: View {
             let toolbar = Self.isFoldableDevice && !laptopPose
             let layout = PhoneScreenLayout.compute(
                 size: screenSize,
-                safe: (inset.top, inset.leading, !toolbar && mode == .inner && !isEditingAddress ? max(inset.bottom - Self.innerBottomGive, 0) : inset.bottom, inset.trailing),
+                safe: (inset.top, inset.leading, toolbar ? 0 : (mode == .inner && !isEditingAddress ? max(inset.bottom - Self.innerBottomGive, 0) : inset.bottom), inset.trailing),
                 fold: reading?.gutter,
                 mode: mode,
                 deskMode: isDesk,
@@ -141,7 +141,7 @@ public struct PhoneMainView: View {
                     primaryIsHorizontal: layout.primaryIsHorizontal,
                     fold: layout.fold,
                     focusedPaneID: focusedPaneID,
-                    leadingDisplayCorners: toolbar ? (Self.displayCornerTop, Self.displayCornerBottom) : nil,
+                    leadingDisplayCorners: toolbar ? (inset.top < 8 ? Self.displayCornerTop : 0, Self.displayCornerBottom) : nil,
                     onAddPane: { session.addPane(mode: mode, isFoldable: Self.isFoldableDevice) }
                 )
                 .environment(\.duoPanelDense, mode == .inner)
@@ -427,26 +427,31 @@ public struct PhoneMainView: View {
     /// The unfolded Duo's inner display: panes sit side by side around a vertical fold.
     private var usesSidePanel: Bool { mode == .inner && !inDeskMode }
 
-    /// Where group A ends and group B begins on the unfolded Duo (screen coordinates), taken
-    /// from the same frames the panes use, so bars and panels line up with the pane edges
-    /// whether the fold is flat or partly open.
+    /// Where group A ends and group B begins on the unfolded Duo (screen coordinates, along the
+    /// primary axis: x when the hinge is vertical (landscape), y when it is horizontal
+    /// (portrait)), taken from the same frames the panes use, so bars and panels line up with
+    /// the pane edges whether the fold is flat or partly open.
     private func seam(layout: PhoneScreenLayout) -> (aEnd: CGFloat, bStart: CGFloat)? {
-        guard mode == .inner, layout.primaryIsHorizontal else { return nil }
+        guard mode == .inner else { return nil }
+        let horizontal = layout.primaryIsHorizontal
         let frames = PaneFrameCalculator.frames(
             count: max(grid.paneCount, 2),
             ratios: grid.paneRatios,
             size: layout.workspace.size,
-            primaryIsHorizontal: true,
+            primaryIsHorizontal: horizontal,
             fold: layout.fold
         )
-        let slots = PaneFrameCalculator.slots(count: max(grid.paneCount, 2), primaryIsHorizontal: true)
+        let slots = PaneFrameCalculator.slots(count: max(grid.paneCount, 2), primaryIsHorizontal: horizontal)
         guard let a = slots.a.first, let b = slots.b.first, a < frames.panes.count, b < frames.panes.count else { return nil }
-        return (frames.panes[a].maxX + layout.workspace.minX, frames.panes[b].minX + layout.workspace.minX)
+        if horizontal {
+            return (frames.panes[a].maxX + layout.workspace.minX, frames.panes[b].minX + layout.workspace.minX)
+        }
+        return (frames.panes[a].maxY + layout.workspace.minY, frames.panes[b].minY + layout.workspace.minY)
     }
 
     /// The two halves of the control bar either side of the seam (screen coordinates).
     private func splitBarRects(layout: PhoneScreenLayout, bar: CGRect) -> (leading: CGRect, trailing: CGRect)? {
-        guard let seam = seam(layout: layout) else { return nil }
+        guard layout.primaryIsHorizontal, let seam = seam(layout: layout) else { return nil }
         let left = layout.workspace.minX, right = layout.workspace.maxX
         guard seam.aEnd - left > 120, right - seam.bStart > 120 else { return nil }
         return (
@@ -457,12 +462,17 @@ public struct PhoneMainView: View {
 
     /// Layouts & Bookmarks and the Syrup sheet on the unfolded Duo: a panel over group B's
     /// side (leading edge on the pane edge, never across the hinge).
-    private func sidePanelRect(layout: PhoneScreenLayout) -> CGRect? {
+    private func sidePanelRect(layout: PhoneScreenLayout, bottomInset: CGFloat = 0) -> CGRect? {
         guard usesSidePanel, let seam = seam(layout: layout) else { return nil }
-        let top = layout.workspace.minY
-        // With the controls in the trailing toolbar the panel is exactly its half's height.
+        // With the controls in the trailing toolbar the panel is its half's full height, down to
+        // the display's bottom edge (its own content keeps clear of the home indicator).
         let bottom = layout.bar == nil ? layout.workspace.maxY : layout.workspace.maxY + PhoneScreenLayout.margin + barHeight
-        return CGRect(x: seam.bStart, y: top, width: layout.workspace.maxX - seam.bStart, height: bottom - top)
+        if layout.primaryIsHorizontal {
+            let top = layout.workspace.minY
+            return CGRect(x: seam.bStart, y: top, width: layout.workspace.maxX - seam.bStart, height: bottom - top)
+        }
+        // Portrait (horizontal hinge): the panel is the lower half, full width.
+        return CGRect(x: layout.workspace.minX, y: seam.bStart, width: layout.workspace.width, height: bottom - seam.bStart)
     }
 
     private func selectedPaneIsOnFarSide(primaryIsHorizontal: Bool) -> Bool {
@@ -575,7 +585,9 @@ public struct PhoneMainView: View {
     /// The side of the hinge the selected pane is on (screen coordinates), or the whole
     /// workspace on a single display.
     private func selectedPaneHalf(layout: PhoneScreenLayout) -> CGRect {
-        guard let seam = seam(layout: layout), grid.paneCount > 1 else { return layout.workspace }
+        // Portrait: the card always sits in the upper band, clear of the hinge and of the
+        // keyboard that rises over the lower half.
+        guard layout.primaryIsHorizontal, let seam = seam(layout: layout), grid.paneCount > 1 else { return layout.workspace }
         let onFarSide = selectedPaneIsOnFarSide(primaryIsHorizontal: true)
         return onFarSide
             ? CGRect(x: seam.bStart, y: layout.workspace.minY, width: layout.workspace.maxX - seam.bStart, height: layout.workspace.height)
@@ -605,10 +617,10 @@ public struct PhoneMainView: View {
     static let innerBarHeight: CGFloat = 50
     static let innerBottomGive: CGFloat = 16
     static let hintHeight: CGFloat = 20
-    /// The Duo's display corner radii, which the panes' outer corners follow. The bottom
-    /// corners are smaller because the panes stop above the home-indicator area.
+    /// The Duo's display corner radius, which the panes' outer corners follow. The panes run to
+    /// the bottom edge; the home indicator overlaps the page, as it does in Safari.
     static let displayCornerTop: CGFloat = 38
-    static let displayCornerBottom: CGFloat = 26
+    static let displayCornerBottom: CGFloat = 38
     /// The system draws the clock and status at the top of the trailing strip.
     static let toolbarTopClearance: CGFloat = 112
 

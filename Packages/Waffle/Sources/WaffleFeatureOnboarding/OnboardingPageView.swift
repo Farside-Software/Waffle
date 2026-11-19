@@ -30,8 +30,13 @@ struct OnboardingPageView: View {
             ViewThatFits(in: .vertical) {
                 stacked(compact: false)
                 stacked(compact: true)
-                ScrollView { stacked(compact: true) }
+                // Longer languages: rows keep their titles and drop the detail lines, then the
+                // miniature steps aside, before the page has to scroll.
+                stacked(compact: true, tight: true)
+                stacked(compact: true, tight: true, showsDemo: false)
+                ScrollView { stacked(compact: true, tight: true, showsDemo: false) }
                     .scrollBounceBehavior(.basedOnSize)
+                    .scrollIndicatorsFlash(onAppear: true)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -39,12 +44,12 @@ struct OnboardingPageView: View {
 
     // MARK: Layouts
 
-    private func stacked(compact: Bool) -> some View {
+    private func stacked(compact: Bool, tight: Bool = false, showsDemo: Bool = true) -> some View {
         VStack(spacing: compact ? 14 : 22) {
             OnboardingPageHeader(page: page, compact: compact)
-            demo(compact: compact)
+            if showsDemo { demo(compact: compact) }
             if !page.features.isEmpty {
-                featureCard(compact: compact)
+                featureCard(compact: compact, detail: !tight)
             }
             footnote
         }
@@ -76,10 +81,12 @@ struct OnboardingPageView: View {
                             textColumn(compact: false, large: true, dense: true, height: column.size.height)
                         }
                         textColumn(compact: true, large: false, dense: dense, height: column.size.height)
+                        textColumn(compact: true, large: false, dense: dense, height: column.size.height, detail: false)
                         ScrollView {
-                            textColumn(compact: true, large: false, dense: dense, height: column.size.height)
+                            textColumn(compact: true, large: false, dense: dense, height: column.size.height, detail: false)
                         }
                         .scrollBounceBehavior(.basedOnSize)
+                        .scrollIndicatorsFlash(onAppear: true)
                     }
                     .frame(width: column.size.width, height: column.size.height)
                 }
@@ -123,10 +130,10 @@ struct OnboardingPageView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func textColumn(compact: Bool, large: Bool, dense: Bool, height: CGFloat) -> some View {
+    private func textColumn(compact: Bool, large: Bool, dense: Bool, height: CGFloat, detail: Bool = true) -> some View {
         VStack(spacing: large ? 22 : 18) {
             OnboardingPageHeader(page: page, compact: compact, large: large)
-            if !page.features.isEmpty, !(dense && page.kind == .syrup) { featureCard(compact: compact, large: large) }
+            if !page.features.isEmpty, !(dense && page.kind == .syrup) { featureCard(compact: compact, large: large, detail: detail) }
             footnote
         }
         .padding(.vertical, 8)
@@ -150,23 +157,23 @@ struct OnboardingPageView: View {
         }
     }
 
-    private func featureCard(compact: Bool, large: Bool = false) -> some View {
+    private func featureCard(compact: Bool, large: Bool = false, detail: Bool = true) -> some View {
         // Rows are spelled out without ForEach: ViewThatFits measures alternatives off the main
         // actor, where a main-actor ForEach content closure trips a dispatch assertion.
         VStack(spacing: 0) {
-            featureRow(0, compact: compact, large: large)
-            featureRow(1, compact: compact, large: large)
-            featureRow(2, compact: compact, large: large)
-            featureRow(3, compact: compact, large: large)
+            featureRow(0, compact: compact, large: large, detail: detail)
+            featureRow(1, compact: compact, large: large, detail: detail)
+            featureRow(2, compact: compact, large: large, detail: detail)
+            featureRow(3, compact: compact, large: large, detail: detail)
         }
         .onboardingCard()
     }
 
     @ViewBuilder
-    private func featureRow(_ index: Int, compact: Bool, large: Bool) -> some View {
+    private func featureRow(_ index: Int, compact: Bool, large: Bool, detail: Bool) -> some View {
         if page.features.indices.contains(index) {
             if index > 0 { Divider().padding(.leading, large ? 76 : 60) }
-            OnboardingFeatureRow(feature: page.features[index], compact: compact, large: large)
+            OnboardingFeatureRow(feature: page.features[index], compact: compact, large: large, showsDetail: detail)
         }
     }
 
@@ -236,6 +243,8 @@ struct OnboardingFeatureRow: View {
     let feature: OnboardingFeature
     var compact = false
     var large = false
+    /// False in the tight tiers: the title alone.
+    var showsDetail = true
 
     @ScaledMetric(relativeTo: .body) private var largeGlyphBox: CGFloat = 48
     @ScaledMetric(relativeTo: .body) private var glyphBox: CGFloat = 36
@@ -253,10 +262,12 @@ struct OnboardingFeatureRow: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(feature.title).font((large ? Font.title3 : Font.body).weight(.semibold))
-                Text(feature.detail)
-                    .font(large ? .body : .subheadline)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                if showsDetail {
+                    Text(feature.detail)
+                        .font(large ? .body : .subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             Spacer(minLength: 8)
             if feature.requiresSyrup {
