@@ -123,11 +123,11 @@ public struct PhoneMainView: View {
             let isDesk = laptopPose && session.canUseDeskMode
             // Duo, except the half-folded laptop pose (which keeps its deck, or its bar): the
             // controls are a column in the trailing strip and the panes run to the edges.
-            let toolbar = Self.isFoldableDevice && !laptopPose
+            let toolbar = Self.isFoldableDevice && !isDesk
             // Portrait on the unfolded Duo has a status band across the top, but the status items
             // only occupy the top of the trailing corner: the panes run to the top edge, and only
             // a pane in the trailing column starts below the status.
-            let statusInStrip = toolbar && inset.top >= 40
+            let statusInStrip = (toolbar || isDesk) && inset.top >= 40
             let stripWidth = max(inset.trailing, PhoneScreenLayout.toolbarStripWidth)
             let layout = PhoneScreenLayout.compute(
                 size: screenSize,
@@ -148,7 +148,7 @@ public struct PhoneMainView: View {
                     primaryIsHorizontal: layout.primaryIsHorizontal,
                     fold: layout.fold,
                     focusedPaneID: focusedPaneID,
-                    leadingDisplayCorners: toolbar ? Self.paneCorners(mode: mode) : nil,
+                    leadingDisplayCorners: toolbar ? Self.paneCorners(mode: mode) : (isDesk ? (Self.paneCorners(mode: mode).top, 14) : nil),
                     trailingTopInset: statusInStrip ? inset.top : 0,
                     onAddPane: { session.addPane(mode: mode, isFoldable: Self.isFoldableDevice) }
                 )
@@ -231,7 +231,7 @@ public struct PhoneMainView: View {
             }
         }
         // Duo: the keyboard never reflows the panes; the address card sits above it by design.
-        .ignoresSafeArea(.keyboard, edges: Self.isFoldableDevice && !inLaptopPose ? .bottom : [])
+        .ignoresSafeArea(.keyboard, edges: Self.isFoldableDevice && !inDeskMode ? .bottom : [])
         .background(Color.wafflePrimary.opacity(0.3).ignoresSafeArea())
         .observingHinge($hinge)
         .animation(.snappy, value: isEditingAddress)
@@ -617,7 +617,7 @@ public struct PhoneMainView: View {
     }
 
     private var barHeight: CGFloat {
-        if Self.isFoldableDevice && !inLaptopPose { return 0 }
+        if Self.isFoldableDevice && !inDeskMode { return 0 }
         return (mode == .inner ? Self.innerBarHeight : PhoneScreenLayout.barHeight) + (showsUnfoldHint ? Self.hintHeight : 0)
     }
     /// The unfolded display is short: a slimmer bar that also uses part of the home-indicator

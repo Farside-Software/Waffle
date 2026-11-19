@@ -61,7 +61,12 @@ nonisolated public struct PhoneScreenLayout: Equatable, Sendable {
         if deskMode, mode == .inner, let fold, !fold.primaryIsHorizontal {
             let foldStart = fold.position - fold.thickness / 2
             let foldEnd = fold.position + fold.thickness / 2
-            let upright = CGRect(x: left, y: top, width: fullWidth, height: max(foldStart - margin - top, 0))
+            // With the status items handled by the caller (`ignoreTopSafeArea`), the upright half
+            // runs to the top and side edges like the unfolded layout.
+            let uLeft = ignoreTopSafeArea ? safe.leading : left
+            let uRight = ignoreTopSafeArea ? size.width - safe.trailing : right
+            let uTop = ignoreTopSafeArea ? 0 : top
+            let upright = CGRect(x: uLeft, y: uTop, width: max(uRight - uLeft, 0), height: max(foldStart - margin - uTop, 0))
             let flat = CGRect(x: left, y: foldEnd + margin, width: fullWidth, height: max(bottom - foldEnd - margin, 0))
             return PhoneScreenLayout(
                 workspace: upright, bar: nil, deck: flat, fold: nil,
