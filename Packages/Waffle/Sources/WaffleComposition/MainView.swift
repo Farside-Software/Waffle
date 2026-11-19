@@ -176,9 +176,10 @@ public struct MainView: View {
         // matches a saved bookmark.
         .userActivity(
             "com.molargiksoftware.Waffle.browsing",
-            isActive: !(grid.selectedCell?.address.isEmpty ?? true)
+            isActive: HandoffEligibility.webpageURL(for: grid.selectedCell?.address ?? "") != nil
         ) { activity in
-            guard let cell = grid.selectedCell, let url = URL(string: cell.address) else { return }
+            guard let cell = grid.selectedCell,
+                  let url = HandoffEligibility.webpageURL(for: cell.address) else { return }
             activity.title = cell.page.title.isEmpty ? cell.address : cell.page.title
             activity.webpageURL = url
             activity.isEligibleForHandoff = true
