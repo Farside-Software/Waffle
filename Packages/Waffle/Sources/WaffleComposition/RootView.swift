@@ -117,11 +117,8 @@ private struct ExtraWindowView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            Image("waffleImage")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
+            WaffleMark()
                 .frame(width: 80, height: 80)
-                .foregroundStyle(Color.waffleSecondary)
 
             VStack(spacing: 8) {
                 Text("Waffle is already open")

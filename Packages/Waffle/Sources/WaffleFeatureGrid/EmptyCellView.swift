@@ -2,11 +2,14 @@
 //  EmptyCellView.swift
 //  WaffleFeatureGrid
 //
-//  A placeholder view shown in cells that don't have a URL loaded yet.
+//  The calm start page shown in a cell or pane with nothing loaded: the Waffle mark, a title,
+//  and one hint line the first few times. Falls back to a smaller mark, then to the title alone,
+//  as the cell shrinks.
 //
 
 #if os(iOS)
 import SwiftUI
+import UIKit
 import WaffleDesignSystem
 
 public struct EmptyCellView: View {
@@ -17,6 +20,10 @@ public struct EmptyCellView: View {
     /// Phone panes: starts a second pane (offered while only one is open).
     private let onAddPane: (() -> Void)?
 
+    /// The hint is for a first look; after it has been on screen once it stays out of the way.
+    @AppStorage("hasSeenStartHint") private var hasSeenHint = false
+    @State private var showsHint = false
+
     public init(isPane: Bool = false, isOnlyPane: Bool = false, onAddPane: (() -> Void)? = nil) {
         self.isPane = isPane
         self.isOnlyPane = isOnlyPane
@@ -25,87 +32,61 @@ public struct EmptyCellView: View {
 
     private var title: LocalizedStringKey { isPane ? "Empty Pane" : "Empty Cell" }
 
+    private var hint: LocalizedStringKey {
+        if isPane { isOnlyPane ? "Type an address below to open a page." : "Tap this pane, then type an address below." }
+        else { "Tap a cell, then use the address bar to open a page." }
+    }
+
     public var body: some View {
         ZStack {
-            // Warm gradient background matching app theme
-            LinearGradient(
-                colors: [Color.wafflePrimary, Color.waffleSecondary],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            Color(uiColor: .systemGroupedBackground)
 
-            // Content card - use ViewThatFits to hide instructions when space is limited
             ViewThatFits(in: .vertical) {
                 fullContent
                 compactContent
                 minimalContent
             }
         }
+        .onAppear { showsHint = !hasSeenHint }
+        .onDisappear { hasSeenHint = true }
     }
 
     private var fullContent: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 14) {
+            WaffleMark().frame(width: 88, height: 88)
             Text(title)
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundStyle(.primary)
-
-            VStack(spacing: 8) {
-                if isPane {
-                    if isOnlyPane {
-                        instructionRow("Type an address below to open a page")
-                    } else {
-                        instructionRow("Tap this pane, then type an address below")
-                    }
-                    instructionRow("Tap ••• for Layouts & Bookmarks")
-                } else {
-                    instructionRow("Tap a **cell** to activate it")
-                    instructionRow("Use the address bar to search or navigate")
-                    instructionRow("Open the menu for Presets & Bookmarks")
-                }
+                .font(.system(.title2, design: .rounded, weight: .bold))
+            if showsHint {
+                Text(hint)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
             }
-            .padding()
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-
             if isPane, isOnlyPane, let onAddPane {
                 Button(action: onAddPane) {
                     Label("Add a second pane", systemImage: "plus.rectangle.on.rectangle")
                 }
                 .buttonStyle(.wafflePrimary)
+                .padding(.top, 4)
             }
         }
-        .padding(24)
-        .background(.thickMaterial, in: RoundedRectangle(cornerRadius: 20))
-        .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
-        .padding(40)
+        .padding(32)
     }
 
     private var compactContent: some View {
-        Text(title)
-            .font(.title2)
-            .fontWeight(.bold)
-            .foregroundStyle(.primary)
-            .padding(16)
-            .background(.thickMaterial, in: RoundedRectangle(cornerRadius: 16))
-            .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
-            .padding(20)
+        VStack(spacing: 8) {
+            WaffleMark().frame(width: 44, height: 44)
+            Text(title)
+                .font(.system(.headline, design: .rounded, weight: .bold))
+        }
+        .padding(16)
     }
 
     private var minimalContent: some View {
         Text(title)
-            .font(.headline)
-            .fontWeight(.bold)
-            .foregroundStyle(.primary)
-            .padding(8)
-            .background(.thickMaterial, in: RoundedRectangle(cornerRadius: 12))
-            .padding(8)
-    }
-
-    private func instructionRow(_ text: LocalizedStringKey) -> some View {
-        Text(text)
-            .font(.subheadline)
+            .font(.system(.subheadline, design: .rounded, weight: .bold))
             .foregroundStyle(.secondary)
-            .multilineTextAlignment(.center)
+            .padding(8)
     }
 }
 
