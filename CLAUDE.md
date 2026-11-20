@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Waffle is a grid-based web browser for iPad (also runs on Mac and Apple Vision as "Designed for iPad"), built with SwiftUI and the native WebKit-for-SwiftUI APIs (`WebView`/`WebPage`). Users browse multiple webpages simultaneously in a customizable grid instead of tabs. SwiftData + CloudKit private-database sync for the library (bookmarks/presets); StoreKit 2 one-time purchase ("Syrup") for premium features.
 
-The app is a **thin app target on top of an SPM umbrella package** (`Packages/Waffle`) of layered, single-responsibility modules — the same clean architecture as Stork/SCOUT. Dependencies point **inward**: features depend on the design system and core; data implements core's protocols; **core depends on nothing** (Foundation + SwiftData only).
+The app is a **thin app target on top of an SPM umbrella package** (`Packages/Waffle`) of layered, single-responsibility modules — the same clean architecture as Stork. Dependencies point **inward**: features depend on the design system and core; data implements core's protocols; **core depends on nothing** (Foundation + SwiftData only).
 
 ## Build & Run
 
