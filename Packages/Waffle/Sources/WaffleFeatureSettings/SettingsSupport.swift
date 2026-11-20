@@ -56,12 +56,21 @@ private struct SettingsPresentation<SheetContent: View>: ViewModifier {
     let fullPage: Bool
     let sheetContent: () -> SheetContent
 
+    // Both presentations hang off the same content. Branching on `fullPage` (if/else around
+    // `content`) gave the content two identities, so folding or unfolding a Duo rebuilt the
+    // whole workspace and created a second WebView for every open page, which traps inside
+    // WebKit's SwiftUI layer.
     func body(content: Content) -> some View {
-        if fullPage {
-            content.fullScreenCover(isPresented: $isPresented, content: sheetContent)
-        } else {
-            content.sheet(isPresented: $isPresented, content: sheetContent)
-        }
+        content
+            .sheet(isPresented: presented(asFullPage: false), content: sheetContent)
+            .fullScreenCover(isPresented: presented(asFullPage: true), content: sheetContent)
+    }
+
+    private func presented(asFullPage: Bool) -> Binding<Bool> {
+        Binding(
+            get: { isPresented && fullPage == asFullPage },
+            set: { if !$0, fullPage == asFullPage { isPresented = false } }
+        )
     }
 }
 

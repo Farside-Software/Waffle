@@ -268,20 +268,19 @@ private struct PhoneTouchSelection: ViewModifier {
     let onTouchDown: () -> Void
     @State private var isTouching = false
 
+    // No if/else around `content`: the content holds the pane's WebView, and giving it two
+    // identities would rebuild the WebView (WebKit traps on a second WebView for a page).
     func body(content: Content) -> some View {
-        if isEnabled {
-            content.simultaneousGesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { _ in
-                        guard !isTouching else { return }
-                        isTouching = true
-                        onTouchDown()
-                    }
-                    .onEnded { _ in isTouching = false }
-            )
-        } else {
-            content
-        }
+        content.simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    guard !isTouching else { return }
+                    isTouching = true
+                    onTouchDown()
+                }
+                .onEnded { _ in isTouching = false },
+            including: isEnabled ? .all : .subviews
+        )
     }
 }
 
