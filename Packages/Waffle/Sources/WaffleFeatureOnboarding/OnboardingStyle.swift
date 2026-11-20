@@ -16,13 +16,7 @@ enum OnboardingStyle {
     static let cardRadius: CGFloat = 20
 
     /// Gold-brown ink for symbols and the active page dot: dark brown on light, the pale gold on dark.
-    static var ink: Color {
-        Color(uiColor: UIColor { traits in
-            traits.userInterfaceStyle == .dark
-                ? UIColor(red: 0xF1 / 255, green: 0xE0 / 255, blue: 0x94 / 255, alpha: 1)
-                : UIColor(red: 0x44 / 255, green: 0x20 / 255, blue: 0x1A / 255, alpha: 1)
-        })
-    }
+    static var ink: Color { .waffleInk }
 
     /// The launch screen's colour: the grouped background, so the handoff has no flash.
     static var background: Color { Color(uiColor: .systemGroupedBackground) }

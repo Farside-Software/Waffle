@@ -41,9 +41,7 @@ public struct WaffleSymbolTile: View {
             .font(.body.weight(.semibold))
             .symbolRenderingMode(.hierarchical)
             // Dark brown on light, the pale gold on dark.
-            .foregroundStyle(Color(uiColor: UIColor { $0.userInterfaceStyle == .dark
-                ? UIColor(red: 0xF1 / 255, green: 0xE0 / 255, blue: 0x94 / 255, alpha: 1)
-                : UIColor(red: 0x44 / 255, green: 0x20 / 255, blue: 0x1A / 255, alpha: 1) }))
+            .foregroundStyle(.waffleInk)
             .frame(width: side, height: side)
             .background(Color.waffleSecondary.opacity(0.28), in: RoundedRectangle(cornerRadius: side * 0.28, style: .continuous))
             .accessibilityHidden(true)
