@@ -641,8 +641,11 @@ public struct PhoneMainView: View {
     static func paneCorners(mode: PaneMode) -> (top: CGFloat, bottom: CGFloat) {
         mode == .inner ? (55, 55 - bottomBand) : (8, 8)
     }
-    /// The system draws the clock and status at the top of the trailing strip.
-    static let toolbarTopClearance: CGFloat = 112
+    /// The system draws the clock and status at the top of the trailing strip. The column grows
+    /// with what it shows: a Focus icon above the clock and the Wi-Fi ring with its page dots end
+    /// near 168 pt on a device (the bare clock and Wi-Fi end near 97 pt), and the safe area does
+    /// not report it. Clear the tallest, so Back never sits under the status.
+    static let toolbarTopClearance: CGFloat = 180
 
     static var isFoldableDevice: Bool {
         #if DEBUG
