@@ -193,26 +193,27 @@ struct ShapeDemo: View {
     }
 
     private func stepper(_ title: LocalizedStringKey, value: Binding<Int>) -> some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 4) {
             Button { value.wrappedValue = max(1, value.wrappedValue - 1) } label: {
-                Image(systemName: "minus").frame(width: 32, height: 32)
+                Image(systemName: "minus").frame(width: 24, height: 32)
             }
             .disabled(value.wrappedValue <= 1)
             .accessibilityLabel(Text("Remove one"))
             VStack(spacing: 0) {
                 Text(title).font(.caption2).foregroundStyle(.secondary)
+                    .lineLimit(1).minimumScaleFactor(0.6)
                 Text(verbatim: "\(value.wrappedValue)").font(.headline).contentTransition(.numericText())
             }
             .frame(maxWidth: .infinity)
             Button { value.wrappedValue = min(3, value.wrappedValue + 1) } label: {
-                Image(systemName: "plus").frame(width: 32, height: 32)
+                Image(systemName: "plus").frame(width: 24, height: 32)
             }
             .disabled(value.wrappedValue >= 3)
             .accessibilityLabel(Text("Add one"))
         }
         .buttonStyle(.bordered)
         .tint(Color.waffleSecondary)
-        .padding(6)
+        .padding(4)
         .frame(maxWidth: .infinity)
         .background(Color(uiColor: .tertiarySystemFill).opacity(0.5), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }

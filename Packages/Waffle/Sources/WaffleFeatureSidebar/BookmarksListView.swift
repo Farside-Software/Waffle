@@ -15,9 +15,9 @@ struct BookmarksListView: View {
     var onMove: ((IndexSet, Int) -> Void)?
 
     var body: some View {
-        List {
+        Group {
             if bookmarks.isEmpty {
-                Section {
+                Group {
                     VStack(spacing: 10) {
                         Image(systemName: "bookmark.slash")
                             .font(.system(size: 32, weight: .regular))
@@ -32,8 +32,6 @@ struct BookmarksListView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 24)
                     .listRowInsets(EdgeInsets(top: 16, leading: 12, bottom: 16, trailing: 12))
-                } header: {
-                    Color.clear.frame(height: 0.1)
                 }
             } else {
                 ForEach(bookmarks) { bm in

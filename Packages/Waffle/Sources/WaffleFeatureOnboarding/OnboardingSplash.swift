@@ -43,9 +43,12 @@ struct OnboardingSplash: View {
                 let centerX = onFold ? (hinge! / 2) : proxy.size.width / 2
                 let markX = onFold ? hinge! + (proxy.size.width - hinge!) / 2 : proxy.size.width / 2
                 let markSide: CGFloat = onFold ? 300 : side
+                // In a short window the Get Started button would cover the tagline: lift the mark and
+                // text together just enough to keep them clear of it. Zero at every normal height.
+                let lift = onFold ? 0 : max(0, side / 2 + 225 - proxy.size.height / 2)
                 WaffleMark(bodyProgress: body0, rowProgress: rows, butterProgress: butter)
                     .frame(width: markSide, height: markSide)
-                    .position(x: markX, y: proxy.size.height / 2)
+                    .position(x: markX, y: proxy.size.height / 2 - lift)
 
                 VStack(spacing: 14) {
                     Text("Waffle")
@@ -59,7 +62,7 @@ struct OnboardingSplash: View {
                 .accessibilityElement(children: .combine)
                 .padding(.horizontal, 32)
                 .frame(width: min(520, columnWidth(proxy)))
-                .position(x: centerX, y: onFold ? proxy.size.height / 2 - 40 : proxy.size.height / 2 + side / 2 + 70)
+                .position(x: centerX, y: onFold ? proxy.size.height / 2 - 40 : proxy.size.height / 2 + side / 2 + 70 - lift)
                 .opacity(showsText ? 1 : 0)
                 .offset(y: showsText ? 0 : 10)
             }

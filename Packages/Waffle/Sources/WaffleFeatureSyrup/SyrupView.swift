@@ -43,66 +43,78 @@ public struct SyrupView: View {
     // MARK: - iPad and Mac (unchanged layout)
 
     private var padBody: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                HStack {
-                    Spacer()
-                    Button {
-                        onClose?()
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title2)
+        // The close button and the price and buy buttons are pinned; only the pitch scrolls, so
+        // Buy and Restore stay reachable in a short window.
+        VStack(spacing: 0) {
+            HStack {
+                Spacer()
+                Button {
+                    onClose?()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title2)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text("Close"))
+            }
+
+            ScrollView {
+                VStack(spacing: 20) {
+                    Image(systemName: "drop.fill")
+                        .font(.system(size: 48))
+                        // Dark brown vanishes on a dark sheet: the brand gold there.
+                        .foregroundStyle(colorScheme == .dark ? Color.wafflePrimary : Color.waffleTertiary)
+
+                    Text(verbatim: "Syrup")
+                        .font(.largeTitle).bold()
+
+                    Text("Waffle + Syrup, what could be better?")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        Label("Grids up to \(AppConfiguration.maxPremiumRows)×\(AppConfiguration.maxPremiumCols) (free is \(AppConfiguration.maxFreeRows)×\(AppConfiguration.maxFreeCols))", systemImage: "square.grid.3x3")
+                        Label("Rearrange cells", systemImage: "arrow.left.arrow.right.square")
+                        Label("Pop out cells into their own windows", systemImage: "rectangle.on.rectangle")
+                        Label("Fullscreen a single cell", systemImage: "arrow.up.left.and.arrow.down.right.rectangle")
+                        Label("Create and update Presets", systemImage: "square.and.arrow.down")
+                        Label("Syrup is shared for free with your whole family", systemImage: "person.2")
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(Text("Close"))
+                    .labelStyle(AlignedIconLabelStyle(iconSize: 22, iconWidth: 40, iconColor: .secondary))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .waffleCard()
+
+                    Text("Syrup is a one-time purchase. Use Family Sharing to share Syrup with family.  ")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+                .padding(.bottom, 8)
+            }
+            .scrollBounceBehavior(.basedOnSize)
+
+            VStack(spacing: 10) {
+                if let price = store.product?.displayPrice {
+                    Text("Only \(price). One time. No subscription!")
+                        .font(.headline)
+                } else {
+                    Text("Loading price…")
+                        .font(.headline)
                 }
 
-                Image(systemName: "drop.fill")
-                    .font(.system(size: 48))
-                    // Dark brown vanishes on a dark sheet: the brand gold there.
-                    .foregroundStyle(colorScheme == .dark ? Color.wafflePrimary : Color.waffleTertiary)
-
-                Text(verbatim: "Syrup")
-                    .font(.largeTitle).bold()
-
-                Text("Waffle + Syrup, what could be better?")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-
-                VStack(alignment: .leading, spacing: 10) {
-                    Label("Grids up to \(AppConfiguration.maxPremiumRows)×\(AppConfiguration.maxPremiumCols) (free is \(AppConfiguration.maxFreeRows)×\(AppConfiguration.maxFreeCols))", systemImage: "square.grid.3x3")
-                    Label("Rearrange cells", systemImage: "arrow.left.arrow.right.square")
-                    Label("Pop out cells into their own windows", systemImage: "rectangle.on.rectangle")
-                    Label("Fullscreen a single cell", systemImage: "arrow.up.left.and.arrow.down.right.rectangle")
-                    Label("Create and update Presets", systemImage: "square.and.arrow.down")
-                    Label("Syrup is shared for free with your whole family", systemImage: "person.2")
+                if let msg = store.errorMessage {
+                    Text(msg)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
                 }
-                .labelStyle(AlignedIconLabelStyle(iconSize: 22, iconWidth: 40, iconColor: .secondary))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .waffleCard()
+
+                purchaseButtons
             }
-
-            if let price = store.product?.displayPrice {
-                Text("Only \(price). One time. No subscription!")
-                    .font(.headline)
-            } else {
-                Text("Loading price…")
-                    .font(.headline)
-            }
-
-            if let msg = store.errorMessage {
-                Text(msg)
-                    .font(.footnote)
-                    .foregroundStyle(.red)
-            }
-
-            purchaseButtons
-
-            Text("Syrup is a one-time purchase. Use Family Sharing to share Syrup with family.  ")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding([.horizontal, .bottom])
+            .multilineTextAlignment(.center)
+            .padding(.top, 10)
         }
         .padding()
         .frame(minWidth: 420, minHeight: 520)

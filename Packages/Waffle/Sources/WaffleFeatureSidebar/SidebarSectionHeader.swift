@@ -32,6 +32,8 @@ struct SidebarSectionHeader: View {
                 Button(secondaryAction.label, systemImage: secondaryAction.icon) { secondaryAction.action() }
             } label: {
                 Label("New", systemImage: "plus")
+                    .lineLimit(1)
+                    .fixedSize()
             }
             .menuStyle(.button)
             .buttonStyle(.waffleSecondary)

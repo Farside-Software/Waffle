@@ -137,28 +137,40 @@ public struct SidebarView: View {
         )
     }
 
+    /// One scrolling list: bookmarks, then presets, each under its own header.
     private var gridContent: some View {
-        VStack {
-            BookmarksHeaderView(
-                onQuickSaveCurrent: { quickSaveBookmark() },
-                onSaveAs: { beginBookmarkCreation() }
-            )
-            bookmarksListView
+        List {
+            Section {
+                BookmarksHeaderView(
+                    onQuickSaveCurrent: { quickSaveBookmark() },
+                    onSaveAs: { beginBookmarkCreation() }
+                )
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
 
-            PresetsHeaderView(
-                onQuickSave: { savePreset(named: nil) },
-                onSaveAs: { beginPresetNaming() }
-            )
+                bookmarksListView
+            }
 
-            PresetsListView(
-                presets: model.filteredPresets,
-                isSyrupEnabled: isSyrupEnabled,
-                requestSyrup: requestSyrup,
-                applyPreset: { applyPreset($0) },
-                overwritePreset: { overwritePreset($0) },
-                onRename: { beginPresetRenaming($0) },
-                onDelete: { model.deletePreset($0) }
-            )
+            Section {
+                PresetsHeaderView(
+                    onQuickSave: { savePreset(named: nil) },
+                    onSaveAs: { beginPresetNaming() }
+                )
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+
+                PresetsListView(
+                    presets: model.filteredPresets,
+                    isSyrupEnabled: isSyrupEnabled,
+                    requestSyrup: requestSyrup,
+                    applyPreset: { applyPreset($0) },
+                    overwritePreset: { overwritePreset($0) },
+                    onRename: { beginPresetRenaming($0) },
+                    onDelete: { model.deletePreset($0) }
+                )
+            }
         }
     }
 

@@ -102,10 +102,11 @@ struct OnboardingPageView: View {
             .padding(.trailing, gutter)
 
             GeometryReader { column in
-                if dense, page.kind == .syrup {
+                if page.kind == .syrup {
                     // No miniature on the Syrup page: the rows take the right half instead.
                     ScrollView {
-                        featureCard(compact: false, large: true)
+                        featureCard(compact: false, large: dense)
+                            .frame(maxWidth: dense ? .infinity : 460)
                             .frame(maxWidth: .infinity, minHeight: column.size.height)
                     }
                     .scrollBounceBehavior(.basedOnSize)
@@ -135,7 +136,7 @@ struct OnboardingPageView: View {
     private func textColumn(compact: Bool, large: Bool, dense: Bool, height: CGFloat, detail: Bool = true, tile: Bool = true) -> some View {
         VStack(spacing: large ? 22 : 18) {
             OnboardingPageHeader(page: page, compact: compact, large: large, showsTile: tile)
-            if !page.features.isEmpty, !(dense && page.kind == .syrup) { featureCard(compact: compact, large: large, detail: detail) }
+            if !page.features.isEmpty, page.kind != .syrup { featureCard(compact: compact, large: large, detail: detail) }
             footnote
         }
         .padding(.vertical, 8)

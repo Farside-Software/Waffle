@@ -123,6 +123,7 @@ public struct MainView: View {
             }
             .toolbar {
                 navigationToolbar
+                reloadToolbar
                 addressToolbar
                 trailingToolbar
             }
@@ -228,42 +229,39 @@ public struct MainView: View {
     }
 
     @ToolbarContentBuilder
+    private var reloadToolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            if !isEditingAddress {
+                // Tap reloads; long-press opens the selected cell's auto-refresh menu.
+                Menu {
+                    if let cell = grid.selectedCell {
+                        AutoRefreshMenu(
+                            selection: cell.refreshInterval,
+                            onSelect: { grid.setRefreshInterval($0, for: cell) }
+                        )
+                    }
+                } label: {
+                    Label(String(localized: "Reload"), systemImage: grid.selectedCell?.refreshInterval == .off || grid.selectedCell == nil
+                          ? "arrow.clockwise" : "arrow.trianglehead.2.clockwise.rotate.90")
+                } primaryAction: {
+                    grid.selectedCell?.reloadCell()
+                }
+                .keyboardShortcut("r", modifiers: .command)
+                .accessibilityHint(Text("Reloads the selected cell. Touch and hold for auto-refresh options"))
+            }
+        }
+    }
+
+    @ToolbarContentBuilder
     private var addressToolbar: some ToolbarContent {
         @Bindable var grid = grid
         ToolbarItem(placement: .principal) {
             HStack(spacing: 8) {
-                if !isEditingAddress {
-                    // Tap reloads; long-press opens the selected cell's auto-refresh menu.
-                    Menu {
-                        if let cell = grid.selectedCell {
-                            AutoRefreshMenu(
-                                selection: cell.refreshInterval,
-                                onSelect: { grid.setRefreshInterval($0, for: cell) }
-                            )
-                        }
-                    } label: {
-                        Image(systemName: grid.selectedCell?.refreshInterval == .off || grid.selectedCell == nil
-                              ? "arrow.clockwise" : "arrow.trianglehead.2.clockwise.rotate.90")
-                            .frame(
-                                width: AppConfiguration.barControlHeight,
-                                height: AppConfiguration.barControlHeight
-                            )
-                            .contentShape(Circle())
-                    } primaryAction: {
-                        grid.selectedCell?.reloadCell()
-                    }
-                    .keyboardShortcut("r", modifiers: .command)
-                    .buttonStyle(.plain)
-                    .glassEffect(.regular.interactive(), in: .circle)
-                    .accessibilityLabel(Text("Reload"))
-                    .accessibilityHint(Text("Reloads the selected cell. Touch and hold for auto-refresh options"))
-                    .transition(.scale.combined(with: .opacity))
-                }
-
                 AddressBarView(
                     text: $grid.addressText,
                     placeholder: String(localized: "Search or enter a URL"),
                     availableWidth: detailWidth,
+                    reservedControlWidth: 450,
                     onSubmit: { grid.submitAddress(using: searchProvider) },
                     onEditingChanged: { editing in
                         withAnimation(.snappy) { isEditingAddress = editing }

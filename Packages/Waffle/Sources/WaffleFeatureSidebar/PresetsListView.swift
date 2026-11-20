@@ -21,9 +21,9 @@ struct PresetsListView: View {
     var onDelete: (Preset) -> Void
 
     var body: some View {
-        List {
+        Group {
             if !isSyrupEnabled {
-                Section {
+                Group {
                     VStack(alignment: .leading, spacing: 8) {
                         Label("Syrup Required", systemImage: "drop.fill")
                             .font(.headline)
@@ -49,7 +49,7 @@ struct PresetsListView: View {
                 }
                 .waffleCard()
             } else if presets.isEmpty {
-                Section {
+                Group {
                     VStack(spacing: 10) {
                         Image(systemName: "square.grid.3x3.slash")
                             .font(.system(size: 32, weight: .regular))
@@ -64,8 +64,6 @@ struct PresetsListView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 24)
                     .listRowInsets(EdgeInsets(top: 16, leading: 12, bottom: 16, trailing: 12))
-                } header: {
-                    Color.clear.frame(height: 0.1)
                 }
             }
 
